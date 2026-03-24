@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Day 1 · 渗透测试环境搭建 </title>
+    <title>Day 2 · 信息收集（主动扫描）</title>
     <style>
         * {
             margin: 0;
@@ -189,19 +189,18 @@
         <span class="progress-badge" id="progress-badge">进度: 0%</span>
     </div>
 
-    <h1>📡 Day 1 · 渗透测试环境搭建</h1>
-    <div class="subtitle">预计耗时：6-8小时 | 核心问题：如何搭建一个合法、可控的渗透测试实验室？</div>
+    <h1>🔍 Day 2 · 信息收集（主动扫描）</h1>
+    <div class="subtitle">预计耗时：6-8小时 | 核心问题：在发动攻击前，如何尽可能多地了解目标？</div>
 
     <!-- 今日目标 -->
     <div class="card">
         <h2>🎯 今日目标</h2>
         <ul>
-            <li>理解虚拟化原理，安装 VMware Workstation Pro</li>
-            <li>下载并配置 Kali Linux 攻击机（虚拟机）</li>
-            <li>下载并配置 Metasploitable 2 靶机（虚拟机）</li>
-            <li>掌握虚拟机网络模式（NAT/桥接/仅主机）并实现互通</li>
-            <li>使用 nmap 进行首次扫描，验证环境</li>
-            <li>了解渗透测试流程与法律边界</li>
+            <li>掌握 Nmap 高级扫描技术（全端口、服务识别、脚本扫描）</li>
+            <li>学习操作系统识别、服务版本探测原理</li>
+            <li>使用 Nmap NSE 脚本进行漏洞探测</li>
+            <li>结合其他工具（如 masscan、nc）进行补充扫描</li>
+            <li>编写一份规范的资产报告</li>
         </ul>
     </div>
 
@@ -209,97 +208,100 @@
     <div class="card">
         <h2>⚙️ 实战步骤（6小时深度版）</h2>
         
-        <h3>阶段一：虚拟化基础（1小时）</h3>
-        <p><strong>理论：</strong> 什么是虚拟化？为什么渗透测试需要隔离环境？</p>
-        <ul>
-            <li>学习 VMware 三种网络模式：桥接、NAT、仅主机</li>
-            <li>下载 VMware Workstation Pro（<a href="https://support.broadcom.com/group/ecx/productdownloads" target="_blank">官方免费下载</a>）</li>
-            <li>以管理员身份安装，重启电脑</li>
-        </ul>
-        <pre><code># 验证 VMware 服务是否运行（Windows）
-services.msc
-# 确保 VMware NAT Service 和 VMware DHCP Service 正在运行</code></pre>
-
-        <h3>阶段二：部署 Kali Linux（1.5小时）</h3>
-        <p>下载 Kali Linux 官方虚拟机镜像：<a href="https://www.kali.org/get-kali/#kali-virtual-machines" target="_blank">Kali VMware 镜像</a>（约3.5GB）</p>
-        <ul>
-            <li>解压 .7z 文件（使用 7-Zip）</li>
-            <li>在 VMware 中打开 .vmx 文件</li>
-            <li>启动虚拟机，登录：<code>kali / kali</code></li>
-            <li>设置 root 密码并更新系统</li>
-        </ul>
-        <pre><code>sudo passwd root          # 设置 root 密码
-sudo su                   # 切换到 root
-apt update && apt upgrade -y   # 更新系统（耗时较长，可后台运行）
-apt install -y kali-linux-headless   # 安装核心工具集（可选）</code></pre>
-        <div class="tip">
-            💡 更新系统可能需要30-60分钟，建议利用这段时间学习《Kali Linux 工具集概览》或继续下一步。
-        </div>
-
-        <h3>阶段三：部署 Metasploitable 2（1小时）</h3>
-        <p>下载 Metasploitable 2：<a href="https://sourceforge.net/projects/metasploitable/" target="_blank">SourceForge 链接</a>（约800MB）</p>
-        <ul>
-            <li>使用 7-Zip 解压（避免文件名损坏）</li>
-            <li>在 VMware 中打开 .vmx 文件，设置网络适配器为 <strong>NAT模式</strong></li>
-            <li>启动虚拟机，登录：<code>msfadmin / msfadmin</code></li>
-            <li>查看 IP 地址：<code>ifconfig</code></li>
-        </ul>
-        <pre><code># 在 Metasploitable 中执行
-ifconfig eth0
-# 记录 IP（例如 192.168.xxx.xxx）</code></pre>
-
-        <h3>阶段四：网络连通性验证（1小时）</h3>
-        <p>在 Kali 中 ping 靶机 IP，确保网络互通。</p>
-        <pre><code>ping 靶机IP -c 4</code></pre>
-        <p>如果不通，排查步骤：</p>
-        <ul>
-            <li>确认两台虚拟机网络适配器均为 NAT</li>
-            <li>检查 VMware NAT 服务是否运行</li>
-            <li>在 Kali 中重启网络：<code>systemctl restart networking</code></li>
-            <li>在靶机中重启网络：<code>sudo ifdown eth0 && sudo ifup eth0</code></li>
-        </ul>
-
-        <h3>阶段五：首次扫描与侦察（1.5小时）</h3>
-        <p>使用 nmap 对靶机进行基础扫描，理解开放端口背后的服务。</p>
-        <pre><code># 基础扫描
-nmap -sV -O 靶机IP
-
-# 全端口扫描（耗时约10分钟）
+        <h3>阶段一：Nmap 基础回顾与高级选项（1.5小时）</h3>
+        <p>复习 Day 1 的扫描命令，深入学习以下参数：</p>
+        <pre><code># 全端口扫描（65535个端口，速度适中）
 nmap -p- -T4 靶机IP
 
-# 保存结果
-nmap -sV -O -oA metasploitable_scan 靶机IP</code></pre>
-        <p>分析扫描结果：</p>
-        <ul>
-            <li>开放了哪些端口？21(FTP), 22(SSH), 80(HTTP), 445(SMB), 3306(MySQL) 等</li>
-            <li>服务版本 vsftpd 2.3.4 存在已知后门，后续将利用</li>
-            <li>操作系统为 Linux 2.6.x</li>
-        </ul>
+# 服务版本深度探测
+nmap -sV --version-intensity 9 靶机IP
+
+# 操作系统精准识别
+nmap -O --osscan-guess 靶机IP
+
+# 同时进行端口、服务、操作系统扫描并输出所有格式
+nmap -sS -sV -O -p- -oA full_scan 靶机IP</code></pre>
+        <p>尝试不同的扫描类型：-sS (SYN半开)、-sT (TCP全连接)、-sU (UDP扫描)。注意 UDP 扫描耗时较长。</p>
         <div class="tip">
-            💡 深入思考：为什么 Metasploitable 故意保留这么多漏洞？这反映了真实世界的哪些安全问题？
+            💡 思考：为什么 SYN 扫描更隐蔽？全端口扫描对目标网络的影响是什么？
         </div>
 
-        <h3>阶段六：环境加固与快照（30分钟）</h3>
-        <p>在 VMware 中为两台虚拟机创建快照，方便后续随时恢复初始状态。</p>
+        <h3>阶段二：Nmap 脚本引擎（NSE）实战（2小时）</h3>
+        <p>NSE 是 Nmap 最强大的功能，包含数百个安全检测脚本。</p>
+        <pre><code># 列出所有脚本分类
+ls /usr/share/nmap/scripts/ | grep -v .nse
+
+# 使用默认安全脚本
+nmap -sC 靶机IP
+
+# 针对特定服务使用脚本（如 SMB）
+nmap --script smb-os-discovery 靶机IP
+nmap --script smb-vuln* 靶机IP
+
+# 使用 http 相关脚本
+nmap --script http-title,http-headers,http-enum 靶机IP
+
+# 尝试暴力破解（谨慎使用）
+nmap --script ssh-brute --script-args userdb=users.txt,passdb=pass.txt 靶机IP</code></pre>
+        <p>重点练习：</p>
         <ul>
-            <li>关闭虚拟机 → 右键 → 快照 → 拍摄快照</li>
-            <li>命名：Kali_initial, Metasploitable_initial</li>
+            <li>使用 <code>http-enum</code> 枚举 Web 目录</li>
+            <li>使用 <code>smb-vuln-ms17-010</code> 检测永恒之蓝漏洞</li>
+            <li>使用 <code>ftp-anon</code> 检测匿名 FTP 登录</li>
         </ul>
-        <p>学习如何利用快照回滚，避免重复安装。</p>
+        <div class="tip">
+            💡 深入思考：脚本扫描的结果是否完全可靠？如何避免误报？
+        </div>
+
+        <h3>阶段三：扫描结果分析与资产报告（1.5小时）</h3>
+        <p>收集所有扫描信息，整理成结构化报告。</p>
+        <pre><code># 将扫描结果保存为 grepable 格式
+nmap -oG output.gnmap 靶机IP
+
+# 使用 awk 提取开放端口列表
+grep "open" output.gnmap | awk '{print $2,$3,$4,$5}'</code></pre>
+        <p>报告应包含：</p>
+        <ul>
+            <li>目标 IP、开放端口及服务版本</li>
+            <li>操作系统猜测</li>
+            <li>每个服务的潜在风险点（如 vsftpd 2.3.4 后门）</li>
+            <li>截图关键扫描结果</li>
+        </ul>
+        <div class="tip">
+            💡 参考行业报告模板，尝试用 Markdown 或 Word 编写。
+        </div>
+
+        <h3>阶段四：补充工具实战（1小时）</h3>
+        <p>学习使用其他信息收集工具，拓宽视野。</p>
+        <ul>
+            <li><strong>masscan</strong>：极速端口扫描器，适合大规模扫描</li>
+            <li><strong>nc (netcat)</strong>：手动 Banner 抓取</li>
+            <li><strong>whatweb</strong>：Web 技术栈识别</li>
+        </ul>
+        <pre><code># masscan 快速扫描（1000个常用端口）
+masscan -p1-1000 --rate=1000 靶机IP
+
+# nc 抓取 banner
+nc -nv 靶机IP 21
+
+# whatweb 识别网站框架
+whatweb http://靶机IP</code></pre>
+        <div class="tip">
+            💡 思考：masscan 与 nmap 的优缺点对比？什么场景下适合使用 masscan？
+        </div>
     </div>
 
     <!-- 验收清单 -->
     <div class="card">
         <h2>✅ 验收清单</h2>
         <ul class="checklist" id="checklist-container">
-            <li><input type="checkbox" id="check0"><label for="check0">VMware Workstation 安装成功，能正常启动虚拟机</label></li>
-            <li><input type="checkbox" id="check1"><label for="check1">Kali Linux 虚拟机导入成功，可登录桌面并打开终端</label></li>
-            <li><input type="checkbox" id="check2"><label for="check2">Metasploitable 2 导入成功，可登录 msfadmin</label></li>
-            <li><input type="checkbox" id="check3"><label for="check3">两台虚拟机网络互通（Kali ping 通靶机）</label></li>
-            <li><input type="checkbox" id="check4"><label for="check4">成功执行 nmap 扫描，并记录了至少5个开放端口</label></li>
-            <li><input type="checkbox" id="check5"><label for="check5">创建了虚拟机快照，了解快照作用</label></li>
-            <li><input type="checkbox" id="check6"><label for="check6">理解了 NAT/桥接/仅主机模式的区别</label></li>
-            <li><input type="checkbox" id="check7"><label for="check7">阅读了《渗透测试法律边界》相关资料（建议搜索“渗透测试授权书”）</label></li>
+            <li><input type="checkbox" id="check0"><label for="check0">能独立使用 nmap 执行全端口扫描并分析结果</label></li>
+            <li><input type="checkbox" id="check1"><label for="check1">成功使用至少 5 个不同的 NSE 脚本，并理解其作用</label></li>
+            <li><input type="checkbox" id="check2"><label for="check2">准确识别出 Metasploitable 2 上的高危服务（vsftpd, Samba, MySQL）</label></li>
+            <li><input type="checkbox" id="check3"><label for="check3">能区分 SYN 扫描和 TCP 全连接扫描的差异</label></li>
+            <li><input type="checkbox" id="check4"><label for="check4">编写了一份完整的资产报告（包含 IP、端口、服务、建议）</label></li>
+            <li><input type="checkbox" id="check5"><label for="check5">使用 masscan 或 nc 进行了补充扫描/抓取</label></li>
+            <li><input type="checkbox" id="check6"><label for="check6">理解了信息收集在渗透测试中的重要性，并能列出至少 3 种被动信息收集方法</label></li>
         </ul>
     </div>
 
@@ -307,7 +309,7 @@ nmap -sV -O -oA metasploitable_scan 靶机IP</code></pre>
     <div class="card">
         <h2>📝 问题记录</h2>
         <div class="question-box">
-            <textarea id="question-text" rows="6" placeholder="记录今天遇到的问题、解决方案、关键命令、重要发现..."></textarea>
+            <textarea id="question-text" rows="6" placeholder="记录今天遇到的问题、新发现的扫描技巧、遇到的错误及解决方法..."></textarea>
         </div>
     </div>
 
@@ -323,12 +325,12 @@ nmap -sV -O -oA metasploitable_scan 靶机IP</code></pre>
     </div>
 
     <hr>
-    <p>📌 明天预告：Day 2 · 信息收集（主动扫描）—— 如何像黑客一样“绘制”目标全貌？</p>
+    <p>📌 明天预告：Day 3 · 被动信息收集 —— 利用 OSINT 从公开渠道挖掘目标信息。</p>
 </div>
 
 <script>
     // ==================== 进度保存逻辑 ====================
-    const STORAGE_KEY = 'day1_progress';
+    const STORAGE_KEY = 'day2_progress';
     let progress = {
         checklist: [],
         question: '',
@@ -339,35 +341,27 @@ nmap -sV -O -oA metasploitable_scan 靶机IP</code></pre>
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
             progress = JSON.parse(saved);
-            // 恢复复选框
             const checkboxes = document.querySelectorAll('.checklist input');
             checkboxes.forEach((cb, idx) => {
                 if (progress.checklist[idx] !== undefined) {
                     cb.checked = progress.checklist[idx];
                 }
             });
-            // 恢复问题文本
             const textarea = document.getElementById('question-text');
-            if (textarea && progress.question) {
-                textarea.value = progress.question;
-            }
-            // 恢复截图
+            if (textarea && progress.question) textarea.value = progress.question;
             const area = document.getElementById('screenshot-area');
             if (progress.screenshots && progress.screenshots.length) {
-                progress.screenshots.forEach(src => addScreenshotElement(src, area, false)); // false表示不自动保存
+                progress.screenshots.forEach(src => addScreenshotElement(src, area, false));
             }
         }
         updateProgressBadge();
     }
 
     function saveProgress() {
-        // 保存复选框状态
         const checkboxes = document.querySelectorAll('.checklist input');
         progress.checklist = Array.from(checkboxes).map(cb => cb.checked);
-        // 保存问题文本
         const textarea = document.getElementById('question-text');
         if (textarea) progress.question = textarea.value;
-        // 截图已经通过 addScreenshotElement 实时更新 progress.screenshots
         localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
         updateProgressBadge();
     }
@@ -380,7 +374,6 @@ nmap -sV -O -oA metasploitable_scan 靶机IP</code></pre>
         if (badge) badge.innerText = `进度: ${percent}%`;
     }
 
-    // 截图相关
     function addScreenshotElement(src, container, autoSave = true) {
         const div = document.createElement('div');
         div.className = 'screenshot-item';
@@ -391,7 +384,6 @@ nmap -sV -O -oA metasploitable_scan 靶机IP</code></pre>
         const delBtn = div.querySelector('.delete-screenshot');
         delBtn.addEventListener('click', () => {
             div.remove();
-            // 更新 progress.screenshots
             const imgs = document.querySelectorAll('#screenshot-area .screenshot-item img');
             progress.screenshots = Array.from(imgs).map(img => img.src);
             if (autoSave) saveProgress();
@@ -415,24 +407,19 @@ nmap -sV -O -oA metasploitable_scan 靶机IP</code></pre>
             files.forEach(file => {
                 if (file.type.startsWith('image/')) {
                     const reader = new FileReader();
-                    reader.onload = (ev) => {
-                        addScreenshotElement(ev.target.result, area);
-                    };
+                    reader.onload = (ev) => addScreenshotElement(ev.target.result, area);
                     reader.readAsDataURL(file);
                 }
             });
             fileInput.value = '';
         });
-
         document.addEventListener('paste', (e) => {
             const items = e.clipboardData.items;
             for (let item of items) {
                 if (item.type.indexOf('image') !== -1) {
                     const blob = item.getAsFile();
                     const reader = new FileReader();
-                    reader.onload = (ev) => {
-                        addScreenshotElement(ev.target.result, area);
-                    };
+                    reader.onload = (ev) => addScreenshotElement(ev.target.result, area);
                     reader.readAsDataURL(blob);
                     break;
                 }
@@ -440,7 +427,6 @@ nmap -sV -O -oA metasploitable_scan 靶机IP</code></pre>
         });
     }
 
-    // 重置进度
     function resetProgress() {
         if (confirm('确定重置今天的全部进度吗？所有勾选、笔记、截图将被清空。')) {
             localStorage.removeItem(STORAGE_KEY);
@@ -449,7 +435,6 @@ nmap -sV -O -oA metasploitable_scan 靶机IP</code></pre>
         }
     }
 
-    // 导出静态网页
     function exportPage() {
         const checkboxes = document.querySelectorAll('.checklist input');
         const checklistState = Array.from(checkboxes).map(cb => cb.checked);
@@ -458,75 +443,59 @@ nmap -sV -O -oA metasploitable_scan 靶机IP</code></pre>
         document.querySelectorAll('#screenshot-area .screenshot-item img').forEach(img => screenshots.push(img.src));
 
         const exportHtml = `<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>渗透学习快照 - Day 1 环境搭建</title>
-    <style>
-        body { background: #1e1e2f; color: #e0e0e0; font-family: monospace; padding: 2rem; line-height: 1.5; }
-        .card { background: #11111f; border-radius: 20px; padding: 1.5rem; margin-bottom: 2rem; }
-        h1 { color: #4c9aff; }
-        h2 { color: #bbd9ff; }
-        .checklist li { margin: 0.5rem 0; list-style: none; }
-        .checklist li.completed { text-decoration: line-through; color: #8a8aa5; }
-        .screenshot-area { display: flex; flex-wrap: wrap; gap: 1rem; }
-        .screenshot-item img { max-width: 200px; border-radius: 8px; }
-    </style>
+<html>
+<head><meta charset="UTF-8"><title>渗透学习快照 - Day 2 信息收集</title>
+<style>
+body { background: #1e1e2f; color: #e0e0e0; font-family: monospace; padding: 2rem; }
+.card { background: #11111f; border-radius: 20px; padding: 1.5rem; margin-bottom: 2rem; }
+h1 { color: #4c9aff; }
+.checklist li { margin: 0.5rem 0; list-style: none; }
+.checklist li.completed { text-decoration: line-through; color: #8a8aa5; }
+.screenshot-area { display: flex; flex-wrap: wrap; gap: 1rem; }
+.screenshot-item img { max-width: 200px; border-radius: 8px; }
+</style>
 </head>
 <body>
-    <div class="container" style="max-width:1200px;margin:0 auto">
-        <h1>📡 渗透学习快照 · Day 1 环境搭建</h1>
-        <p><strong>导出时间：</strong> ${new Date().toLocaleString()}</p>
-        <div class="card">
-            <h2>🎯 今日目标</h2>
-            <ul><li>理解虚拟化原理，安装 VMware Workstation Pro</li><li>下载并配置 Kali Linux 攻击机</li><li>下载并配置 Metasploitable 2 靶机</li><li>掌握虚拟机网络模式并实现互通</li><li>使用 nmap 进行首次扫描</li><li>了解渗透测试流程与法律边界</li></ul>
-        </div>
-        <div class="card">
-            <h2>✅ 验收清单</h2>
-            <ul class="checklist">
-                ${document.querySelectorAll('.checklist label').length ? Array.from(document.querySelectorAll('.checklist label')).map((label, idx) => `<li class="${checklistState[idx] ? 'completed' : ''}">${checklistState[idx] ? '✔️ ' : '☐ '}${label.innerText}</li>`).join('') : ''}
-            </ul>
-        </div>
-        <div class="card">
-            <h2>📝 问题记录</h2>
-            <p style="white-space: pre-wrap;">${questionText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
-        </div>
-        <div class="card">
-            <h2>📸 截图记录</h2>
-            <div class="screenshot-area">
-                ${screenshots.map(src => `<div class="screenshot-item"><img src="${src}" alt="screenshot"></div>`).join('')}
-            </div>
-        </div>
-        <hr>
-        <p>本文件为渗透学习系统导出，包含当时的学习进度和记录。</p>
+<div style="max-width:1200px;margin:0 auto">
+    <h1>🔍 渗透学习快照 · Day 2 信息收集</h1>
+    <p>导出时间：${new Date().toLocaleString()}</p>
+    <div class="card">
+        <h2>✅ 验收清单</h2>
+        <ul class="checklist">
+            ${document.querySelectorAll('.checklist label').length ? Array.from(document.querySelectorAll('.checklist label')).map((label, idx) => `<li class="${checklistState[idx] ? 'completed' : ''}">${checklistState[idx] ? '✔️ ' : '☐ '}${label.innerText}</li>`).join('') : ''}
+        </ul>
     </div>
+    <div class="card">
+        <h2>📝 问题记录</h2>
+        <p style="white-space: pre-wrap;">${questionText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
+    </div>
+    <div class="card">
+        <h2>📸 截图记录</h2>
+        <div class="screenshot-area">${screenshots.map(src => `<div class="screenshot-item"><img src="${src}"></div>`).join('')}</div>
+    </div>
+</div>
 </body>
 </html>`;
         const blob = new Blob([exportHtml], {type: 'text/html'});
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
         link.href = url;
-        link.download = `pentest_day1_${new Date().toISOString().slice(0,10)}.html`;
+        link.download = `pentest_day2_${new Date().toISOString().slice(0,10)}.html`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
     }
 
-    // 绑定事件
     document.getElementById('reset-progress').addEventListener('click', resetProgress);
     document.getElementById('export-page').addEventListener('click', exportPage);
 
-    // 监听变化自动保存
     function bindAutoSave() {
-        const checkboxes = document.querySelectorAll('.checklist input');
-        checkboxes.forEach(cb => cb.addEventListener('change', saveProgress));
+        document.querySelectorAll('.checklist input').forEach(cb => cb.addEventListener('change', saveProgress));
         const textarea = document.getElementById('question-text');
         if (textarea) textarea.addEventListener('input', saveProgress);
     }
 
-    // 初始化
     loadProgress();
     initScreenshotHandlers();
     bindAutoSave();
