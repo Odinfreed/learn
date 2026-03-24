@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>渗透测试学习导航 | 问题驱动实战路线</title>
+    <title>渗透测试学习系统 | 问题驱动实战</title>
     <style>
         * {
             margin: 0;
@@ -12,272 +12,641 @@
         }
 
         body {
-            font-family: 'Segoe UI', 'Fira Code', 'Cascadia Code', monospace, system-ui;
             background: #1e1e2f;
             color: #e0e0e0;
-            height: 100vh;
-            overflow: hidden;
+            font-family: 'Segoe UI', 'Fira Code', monospace, system-ui;
+            padding: 2rem;
+            line-height: 1.5;
         }
 
-        /* 整体布局 */
-        .app {
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 头部 */
+        .header {
             display: flex;
-            height: 100vh;
-            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #2a2a3a;
         }
 
-        /* 侧边栏 (文件树风格) */
-        .sidebar {
-            width: 320px;
-            background: #11111f;
-            border-right: 1px solid #2a2a3a;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            flex-shrink: 0;
-        }
-
-        .sidebar-header {
-            padding: 20px 16px;
-            background: #0b0b14;
-            border-bottom: 1px solid #2a2a3a;
-        }
-
-        .sidebar-header h2 {
-            font-size: 1.3rem;
-            letter-spacing: 1px;
-            font-weight: 600;
+        .title h1 {
+            font-size: 1.8rem;
             color: #4c9aff;
         }
 
-        .sidebar-header p {
-            font-size: 0.75rem;
+        .title p {
             color: #8a8aa5;
-            margin-top: 6px;
+            font-size: 0.85rem;
         }
 
-        /* 日程树 */
-        .schedule-tree {
-            padding: 16px 12px;
-            flex: 1;
-        }
-
-        .tree-category {
-            margin-bottom: 24px;
-        }
-
-        .tree-category-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            font-weight: 600;
-            color: #7c7c9c;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-            padding-left: 8px;
-        }
-
-        .tree-item {
-            display: block;
-            padding: 8px 12px;
-            margin: 2px 0;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            color: #cdcdff;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            font-family: 'Fira Code', monospace;
-        }
-
-        .tree-item:hover {
-            background: #2a2a3a;
-            color: white;
-            padding-left: 20px;
-        }
-
-        .tree-item.active {
-            background: #2a2a5a;
-            color: #bbd9ff;
-            border-left: 3px solid #4c9aff;
-        }
-
-        .tree-item .badge {
-            float: right;
-            font-size: 0.7rem;
-            background: #2a2a3a;
-            padding: 2px 6px;
-            border-radius: 20px;
-            color: #aaa;
-        }
-
-        .tree-item.completed .badge {
-            background: #2e6b3e;
-            color: #b0ffb0;
-        }
-
-        /* 主内容区 */
-        .main-content {
-            flex: 1;
-            background: #1a1a2a;
+        .date-control {
+            background: #11111f;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
             display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .toolbar {
-            background: #0f0f1a;
-            padding: 10px 20px;
-            border-bottom: 1px solid #2a2a3a;
-            display: flex;
-            gap: 12px;
+            gap: 1rem;
             align-items: center;
-            font-size: 0.8rem;
+            flex-wrap: wrap;
         }
 
-        .toolbar button {
+        .date-control button {
             background: #2a2a3a;
             border: none;
-            color: #ddd;
-            padding: 6px 14px;
+            color: white;
+            padding: 0.4rem 1rem;
             border-radius: 20px;
             cursor: pointer;
             font-family: monospace;
             transition: 0.2s;
         }
 
+        .date-control button:hover {
+            background: #4c9aff;
+        }
+
+        #date-picker {
+            background: #0f0f1a;
+            border: 1px solid #3a3a5a;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+
+        .day-indicator {
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: #2a2a5a;
+            padding: 0.2rem 1rem;
+            border-radius: 30px;
+        }
+
+        /* 工具栏 */
+        .toolbar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .toolbar button {
+            background: #2a2a3a;
+            border: none;
+            color: #ddd;
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: monospace;
+            transition: 0.2s;
+        }
+
+        .toolbar button.primary {
+            background: #4c9aff;
+            color: #111;
+            font-weight: bold;
+        }
+
         .toolbar button:hover {
             background: #3a3a5a;
         }
 
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: #1e1e2e;
+        /* 主内容卡片 */
+        .card {
+            background: #11111f;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
-        /* 滚动条美化 */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+        .card h2 {
+            color: #bbd9ff;
+            border-left: 4px solid #4c9aff;
+            padding-left: 0.8rem;
+            margin-bottom: 1rem;
         }
-        ::-webkit-scrollbar-track {
-            background: #11111f;
+
+        .card h3 {
+            color: #9eb3ff;
+            margin: 1rem 0 0.5rem 0;
         }
-        ::-webkit-scrollbar-thumb {
-            background: #4c4c6e;
-            border-radius: 4px;
+
+        /* 验收清单 */
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        .checklist li {
+            margin: 0.8rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .checklist input[type="checkbox"] {
+            width: 1.2rem;
+            height: 1.2rem;
+            cursor: pointer;
+        }
+        .checklist label {
+            cursor: pointer;
+            flex: 1;
+        }
+
+        /* 问题记录 */
+        .question-box textarea {
+            width: 100%;
+            background: #0a0a14;
+            border: 1px solid #2a2a3a;
+            color: #e0e0e0;
+            padding: 0.8rem;
+            border-radius: 12px;
+            font-family: monospace;
+            resize: vertical;
+            margin-top: 0.5rem;
+        }
+
+        /* 截图区域 */
+        .screenshot-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .screenshot-item {
+            position: relative;
+            background: #0a0a14;
+            border-radius: 12px;
+            padding: 0.5rem;
+            border: 1px solid #2a2a3a;
+            max-width: 200px;
+        }
+        .screenshot-item img {
+            max-width: 100%;
+            border-radius: 8px;
+            display: block;
+        }
+        .delete-screenshot {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1;
+        }
+        .add-screenshot {
+            background: #2a2a3a;
+            border: 1px dashed #6c6c8c;
+            border-radius: 12px;
+            padding: 0.8rem;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .add-screenshot:hover {
+            background: #3a3a5a;
+        }
+
+        hr {
+            border-color: #2a2a3a;
+            margin: 1.5rem 0;
+        }
+
+        code, pre {
+            background: #0a0a14;
+            padding: 0.2rem 0.4rem;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+        }
+        pre {
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 0.5rem 0;
         }
     </style>
 </head>
 <body>
-<div class="app">
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h2>📡 渗透·问题驱动</h2>
-            <p>从实战出发 · 每日一关</p>
+<div class="container">
+    <div class="header">
+        <div class="title">
+            <h1>📡 渗透测试 · 问题驱动学习</h1>
+            <p>每日一关 | 自动跟踪进度 | 支持截图与笔记</p>
         </div>
-        <div class="schedule-tree">
-            <!-- 总览与今日入口 -->
-            <div class="tree-category">
-                <div class="tree-category-title">📌 导航</div>
-                <a href="#" class="tree-item" data-src="total_schedule.html">
-                    📅 总日程规划 · 知识体系
-                </a>
-                <a href="#" class="tree-item active" data-src="today_schedule.html">
-                    🚀 今日任务：环境搭建
-                </a>
-            </div>
-
-            <!-- 每日任务列表 (预置30天链接，按需创建文件) -->
-            <div class="tree-category">
-                <div class="tree-category-title">🗓️ 实战日程 (1~30天)</div>
-                <!-- 动态生成1~30天链接，便于维护 -->
-                <div id="daily-links"></div>
-            </div>
-
-            <!-- 资源/工具 -->
-            <div class="tree-category">
-                <div class="tree-category-title">🛠️ 工具链</div>
-                <a href="https://www.kali.org/get-kali/" class="tree-item" target="_blank">Kali Linux 镜像</a>
-                <a href="https://sourceforge.net/projects/metasploitable/" class="tree-item" target="_blank">Metasploitable 2</a>
-                <a href="https://portswigger.net/burp/communitydownload" class="tree-item" target="_blank">Burp Suite</a>
-                <a href="https://github.com/opsdisk/metagoofil" class="tree-item" target="_blank">信息收集工具集</a>
-            </div>
+        <div class="date-control">
+            <button id="prev-day">◀ 前一天</button>
+            <span id="day-label" class="day-indicator">Day 1</span>
+            <button id="next-day">后一天 ▶</button>
+            <input type="date" id="date-picker" value="2026-03-24">
         </div>
     </div>
 
-    <div class="main-content">
-        <div class="toolbar">
-            <span>📂 当前文档：</span>
-            <span id="current-doc-name">今日任务：环境搭建</span>
-            <button id="open-in-new-tab">🔗 新窗口打开</button>
-        </div>
-        <iframe id="content-frame" src="today_schedule.html" title="学习内容"></iframe>
+    <div class="toolbar">
+        <button id="reset-today">🔄 重置今日进度</button>
+        <button id="export-page" class="primary">📤 导出为静态网页</button>
     </div>
+
+    <!-- 动态内容区域 -->
+    <div id="content-area"></div>
 </div>
 
 <script>
-    // 生成每日链接 (day1.html ~ day30.html)
-    const dailyContainer = document.getElementById('daily-links');
-    for (let i = 1; i <= 30; i++) {
-        const dayNum = i.toString().padStart(2, '0');
+    // ==================== 日程数据（共30天） ====================
+    // 根据 total_schedule.html 整理
+    const daysData = [
+        { // Day 1
+            title: "环境搭建",
+            goals: ["安装虚拟化软件（VMware Workstation Pro）", "导入Kali Linux 攻击机", "导入Metasploitable 2 靶机", "配置网络互通（ping通）", "执行首次nmap扫描，验证环境"],
+            steps: `<h3>1. 安装VMware（10分钟）</h3><p>官网下载 <a href="https://support.broadcom.com/group/ecx/productdownloads" target="_blank">VMware Workstation Pro</a>（现免费），安装时选择“以管理员身份运行”。安装后重启。</p>
+                    <h3>2. 下载并导入Kali Linux（30分钟）</h3><p>从 <a href="https://www.kali.org/get-kali/#kali-virtual-machines" target="_blank">Kali 官方</a> 下载 VMware 镜像（.7z），解压后用VMware打开 .vmx 文件。<br>启动后登录 <code>kali / kali</code>，打开终端：</p>
+                    <pre><code>sudo passwd root      # 设置root密码\nsudo su               # 切换root\napt update            # 更新软件源（可选，可跳过加快速度）</code></pre>
+                    <h3>3. 下载并导入Metasploitable 2（30分钟）</h3><p>从 <a href="https://sourceforge.net/projects/metasploitable/" target="_blank">SourceForge</a> 下载 Metasploitable-2.zip，用7-Zip解压，VMware打开 .vmx。<br>网络适配器设为 <strong>NAT模式</strong>（与Kali保持一致）。<br>启动后登录：<code>msfadmin / msfadmin</code></p>
+                    <h3>4. 网络连通性验证（15分钟）</h3><p>在Metasploitable中执行 <code>ifconfig</code> 记下IP（如192.168.xx.xx）。<br>在Kali终端执行：<code>ping 靶机IP</code>，应收到回复。</p>
+                    <div class="tip">💡 若ping不通：检查两台虚拟机网络适配器是否都选“NAT模式”；重启VMware网络服务。</div>
+                    <h3>5. 第一次扫描（20分钟）</h3><p>在Kali中执行：</p><pre><code>nmap -sV -O 靶机IP</code></pre><p>预期看到开放端口：21(vsftpd 2.3.4)，22(OpenSSH)，80(Apache)，445(Samba)，3306(MySQL)等。<br>保存结果：<code>nmap -sV -O -oA metasploitable_scan 靶机IP</code></p>
+                    <h3>6. 整理笔记（10分钟）</h3><p>记录Kali IP、靶机IP、扫描结果截图或文本，写入个人笔记。</p>`,
+            checklistItems: ["VMware中Kali和Metasploitable均能启动", "Kali可以ping通Metasploitable", "nmap扫描显示至少5个开放端口，且包含vsftpd 2.3.4", "已记录IP地址和扫描输出"]
+        },
+        // Day 2 示例（后续可继续填充，此处简化，实际可根据需要扩展）
+        { // Day 2
+            title: "信息收集（主动扫描）",
+            goals: ["学习Nmap高级选项", "识别操作系统与服务版本", "编写资产报告"],
+            steps: `<h3>1. Nmap高级扫描</h3><p>使用 <code>nmap -sS -sV -O -p- 目标IP</code> 进行全端口扫描。</p>
+                    <h3>2. 服务枚举</h3><p>使用 <code>nmap --script=banner 目标IP</code> 获取服务banner。</p>`,
+            checklistItems: ["完成一次全端口扫描", "获得服务版本列表", "记录操作系统信息"]
+        },
+        // 为了简洁，Day3~Day30 可依据 total_schedule.html 补充，但为了代码长度，此处只填充前2天，实际使用时你可以在数组中继续添加。
+        // 由于篇幅限制，后面28天可用相同结构填充，内容参照 total_schedule.html 中的卡片描述。
+        // 你也可以在发布前将 daysData 扩展至30项。
+    ];
+
+    // 为了演示，将 DaysData 扩展至30天（用占位符填充，实际请按需修改）
+    while (daysData.length < 30) {
+        const idx = daysData.length + 1;
+        daysData.push({
+            title: `第 ${idx} 天 · 待细化`,
+            goals: ["根据总日程规划填写具体目标"],
+            steps: `<p>详细内容请参考 total_schedule.html 中的规划。</p>`,
+            checklistItems: ["完成对应实战任务"]
+        });
+    }
+
+    // ==================== 全局配置 ====================
+    const START_DATE = new Date(2026, 2, 24); // 2026-03-24 (月份从0开始)
+    const TOTAL_DAYS = 30;
+
+    // 当前显示的日期索引（0-based）
+    let currentDayIndex = 0; // 0 = Day1
+
+    // 存储所有数据（按索引）
+    let progressData = {};
+
+    // 从 localStorage 加载数据
+    function loadProgress() {
+        const saved = localStorage.getItem("pentest_progress");
+        if (saved) {
+            progressData = JSON.parse(saved);
+        } else {
+            progressData = {};
+        }
+    }
+
+    // 保存当前日期的数据到 localStorage
+    function saveProgressForCurrentDay() {
+        const dayKey = `day_${currentDayIndex}`;
+        // 获取当前页面控件中的数据
+        const checklist = document.querySelectorAll('.checklist input[type="checkbox"]');
+        const checklistState = Array.from(checklist).map(cb => cb.checked);
+        const questionText = document.getElementById('question-text')?.value || '';
+        // 截图：从 .screenshot-area 中收集所有 img 的 src
+        const screenshotArea = document.getElementById('screenshot-area');
+        const screenshots = [];
+        if (screenshotArea) {
+            const imgs = screenshotArea.querySelectorAll('.screenshot-item img');
+            imgs.forEach(img => {
+                screenshots.push(img.src); // base64
+            });
+        }
+        progressData[dayKey] = {
+            checklistState,
+            questionText,
+            screenshots
+        };
+        localStorage.setItem("pentest_progress", JSON.stringify(progressData));
+    }
+
+    // 渲染当前日期的内容
+    async function renderCurrentDay() {
+        const day = daysData[currentDayIndex];
+        if (!day) return;
+
+        const dayNumber = currentDayIndex + 1;
+        document.getElementById('day-label').innerText = `Day ${dayNumber} · ${day.title}`;
+
+        // 构建HTML
+        let html = `
+            <div class="card">
+                <h2>🎯 今日目标</h2>
+                <ul>
+                    ${day.goals.map(g => `<li>${g}</li>`).join('')}
+                </ul>
+            </div>
+            <div class="card">
+                <h2>⚙️ 实战步骤</h2>
+                ${day.steps}
+            </div>
+            <div class="card">
+                <h2>✅ 验收清单</h2>
+                <ul class="checklist" id="checklist-container">
+                    ${day.checklistItems.map((item, idx) => `
+                        <li>
+                            <input type="checkbox" id="check_${idx}" data-idx="${idx}">
+                            <label for="check_${idx}">${item}</label>
+                        </li>
+                    `).join('')}
+                </ul>
+            </div>
+            <div class="card">
+                <h2>📝 问题记录</h2>
+                <div class="question-box">
+                    <textarea id="question-text" rows="4" placeholder="记录今天遇到的问题、解决思路、重要知识点..."></textarea>
+                </div>
+            </div>
+            <div class="card">
+                <h2>📸 截图记录</h2>
+                <div id="screenshot-area" class="screenshot-area"></div>
+                <div class="add-screenshot" id="add-screenshot-btn">
+                    📷 上传截图<br>
+                    <span style="font-size:0.7rem;">点击或粘贴</span>
+                </div>
+                <input type="file" id="screenshot-file-input" accept="image/*" multiple style="display:none">
+            </div>
+        `;
+
+        document.getElementById('content-area').innerHTML = html;
+
+        // 绑定验收清单变化保存
+        const checkboxes = document.querySelectorAll('.checklist input');
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', () => saveProgressForCurrentDay());
+        });
+
+        // 绑定问题记录保存（防抖）
+        const questionTextarea = document.getElementById('question-text');
+        if (questionTextarea) {
+            questionTextarea.addEventListener('input', () => saveProgressForCurrentDay());
+        }
+
+        // 绑定截图相关
+        initScreenshotHandlers();
+
+        // 加载已保存的数据
+        const dayKey = `day_${currentDayIndex}`;
+        const saved = progressData[dayKey];
+        if (saved) {
+            // 恢复复选框
+            if (saved.checklistState) {
+                checkboxes.forEach((cb, idx) => {
+                    if (saved.checklistState[idx] !== undefined) {
+                        cb.checked = saved.checklistState[idx];
+                    }
+                });
+            }
+            // 恢复问题文本
+            if (saved.questionText) {
+                questionTextarea.value = saved.questionText;
+            }
+            // 恢复截图
+            if (saved.screenshots && saved.screenshots.length) {
+                const area = document.getElementById('screenshot-area');
+                saved.screenshots.forEach(src => {
+                    addScreenshotElement(src, area);
+                });
+            }
+        }
+    }
+
+    // 截图处理初始化
+    function initScreenshotHandlers() {
+        const addBtn = document.getElementById('add-screenshot-btn');
+        const fileInput = document.getElementById('screenshot-file-input');
+        const area = document.getElementById('screenshot-area');
+
+        // 点击按钮触发文件选择
+        addBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+        fileInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            files.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        addScreenshotElement(ev.target.result, area);
+                        saveProgressForCurrentDay();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            fileInput.value = ''; // 清空以便重新选择同一文件
+        });
+
+        // 监听粘贴事件
+        document.addEventListener('paste', (e) => {
+            const items = e.clipboardData.items;
+            for (let item of items) {
+                if (item.type.indexOf('image') !== -1) {
+                    const blob = item.getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        addScreenshotElement(ev.target.result, area);
+                        saveProgressForCurrentDay();
+                    };
+                    reader.readAsDataURL(blob);
+                    break; // 只取第一张图片
+                }
+            }
+        });
+    }
+
+    function addScreenshotElement(src, container) {
+        const div = document.createElement('div');
+        div.className = 'screenshot-item';
+        div.innerHTML = `
+            <img src="${src}" alt="screenshot">
+            <button class="delete-screenshot" title="删除">✖</button>
+        `;
+        const delBtn = div.querySelector('.delete-screenshot');
+        delBtn.addEventListener('click', () => {
+            div.remove();
+            saveProgressForCurrentDay();
+        });
+        container.appendChild(div);
+    }
+
+    // 根据日期计算索引（起始日 START_DATE）
+    function getDayIndexFromDate(date) {
+        const diffTime = date - START_DATE;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays < 0) return 0;
+        if (diffDays >= TOTAL_DAYS) return TOTAL_DAYS - 1;
+        return diffDays;
+    }
+
+    // 同步日期选择器与当前索引
+    function updateDatePickerFromIndex() {
+        const currentDate = new Date(START_DATE);
+        currentDate.setDate(START_DATE.getDate() + currentDayIndex);
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        document.getElementById('date-picker').value = `${year}-${month}-${day}`;
+    }
+
+    // 设置当前索引并刷新
+    function setCurrentDayIndex(newIndex) {
+        if (newIndex < 0) newIndex = 0;
+        if (newIndex >= TOTAL_DAYS) newIndex = TOTAL_DAYS - 1;
+        currentDayIndex = newIndex;
+        updateDatePickerFromIndex();
+        renderCurrentDay();
+    }
+
+    // 重置今日进度
+    function resetTodayProgress() {
+        const dayKey = `day_${currentDayIndex}`;
+        if (confirm('确定重置今天的全部进度吗？(复选框、笔记、截图将被清空)')) {
+            delete progressData[dayKey];
+            localStorage.setItem("pentest_progress", JSON.stringify(progressData));
+            renderCurrentDay(); // 重新渲染，清空数据
+        }
+    }
+
+    // 导出为独立静态网页
+    function exportAsStatic() {
+        // 获取当前日期的所有状态
+        const day = daysData[currentDayIndex];
+        const dayNumber = currentDayIndex + 1;
+        const checklist = document.querySelectorAll('.checklist input');
+        const checklistState = Array.from(checklist).map(cb => cb.checked);
+        const questionText = document.getElementById('question-text')?.value || '';
+        const screenshots = [];
+        const screenshotItems = document.querySelectorAll('#screenshot-area .screenshot-item img');
+        screenshotItems.forEach(img => screenshots.push(img.src));
+
+        // 构建导出HTML
+        const exportHtml = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>渗透学习快照 - Day ${dayNumber} ${day.title}</title>
+    <style>
+        body { background: #1e1e2f; color: #e0e0e0; font-family: monospace; padding: 2rem; line-height: 1.5; }
+        .card { background: #11111f; border-radius: 20px; padding: 1.5rem; margin-bottom: 2rem; }
+        h1 { color: #4c9aff; }
+        h2 { color: #bbd9ff; border-left: 4px solid #4c9aff; padding-left: 0.8rem; }
+        .checklist li { margin: 0.5rem 0; list-style: none; }
+        .checklist li.completed { text-decoration: line-through; color: #8a8aa5; }
+        .screenshot-area { display: flex; flex-wrap: wrap; gap: 1rem; }
+        .screenshot-item img { max-width: 200px; border-radius: 8px; }
+        hr { border-color: #2a2a3a; }
+        pre { background: #0a0a14; padding: 1rem; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container" style="max-width:1200px;margin:0 auto">
+        <h1>📡 渗透学习快照 · Day ${dayNumber} ${day.title}</h1>
+        <p><strong>导出时间：</strong> ${new Date().toLocaleString()}</p>
+        <div class="card">
+            <h2>🎯 今日目标</h2>
+            <ul>${day.goals.map(g => `<li>${g}</li>`).join('')}</ul>
+        </div>
+        <div class="card">
+            <h2>⚙️ 实战步骤</h2>
+            ${day.steps}
+        </div>
+        <div class="card">
+            <h2>✅ 验收清单</h2>
+            <ul class="checklist">
+                ${day.checklistItems.map((item, idx) => `<li class="${checklistState[idx] ? 'completed' : ''}">${checklistState[idx] ? '✔️ ' : '☐ '}${item}</li>`).join('')}
+            </ul>
+        </div>
+        <div class="card">
+            <h2>📝 问题记录</h2>
+            <p style="white-space: pre-wrap;">${questionText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
+        </div>
+        <div class="card">
+            <h2>📸 截图记录</h2>
+            <div class="screenshot-area">
+                ${screenshots.map(src => `<div class="screenshot-item"><img src="${src}" alt="screenshot"></div>`).join('')}
+            </div>
+        </div>
+        <hr>
+        <p style="text-align:center">本文件为渗透学习系统导出，包含当时的学习进度和记录。</p>
+    </div>
+</body>
+</html>`;
+
+        // 下载文件
+        const blob = new Blob([exportHtml], {type: 'text/html'});
         const link = document.createElement('a');
-        link.href = '#';
-        link.className = 'tree-item';
-        link.setAttribute('data-src', `day${i}.html`);
-        // 根据实际进度标记已完成(演示标记前1天为完成，可根据需要调整)
-        if (i === 1) {
-            link.innerHTML = `📘 Day ${dayNum} · 环境搭建 <span class="badge">今日</span>`;
-        } else if (i < 1) {
-            link.innerHTML = `✅ Day ${dayNum} · 待命名 <span class="badge">已完成</span>`;
-            link.classList.add('completed');
-        } else {
-            link.innerHTML = `📄 Day ${dayNum} · 待规划 <span class="badge">未开始</span>`;
-        }
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const src = link.getAttribute('data-src');
-            document.getElementById('content-frame').src = src;
-            // 更新高亮
-            document.querySelectorAll('.tree-item').forEach(el => el.classList.remove('active'));
-            link.classList.add('active');
-            document.getElementById('current-doc-name').innerText = link.innerText.split('·')[0].trim();
-        });
-        dailyContainer.appendChild(link);
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.download = `pentest_day${dayNumber}_${day.title.replace(/\s/g, '_')}.html`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
     }
 
-    // 总日程和今日任务的点击处理
-    document.querySelectorAll('.tree-item[data-src]').forEach(item => {
-        if (!item.getAttribute('data-src')) return;
-        item.addEventListener('click', (e) => {
-            e.preventDefault();
-            const src = item.getAttribute('data-src');
-            document.getElementById('content-frame').src = src;
-            document.querySelectorAll('.tree-item').forEach(el => el.classList.remove('active'));
-            item.classList.add('active');
-            document.getElementById('current-doc-name').innerText = item.innerText.split('·')[0].trim();
-        });
+    // 事件绑定
+    document.getElementById('prev-day').addEventListener('click', () => {
+        setCurrentDayIndex(currentDayIndex - 1);
     });
+    document.getElementById('next-day').addEventListener('click', () => {
+        setCurrentDayIndex(currentDayIndex + 1);
+    });
+    document.getElementById('reset-today').addEventListener('click', resetTodayProgress);
+    document.getElementById('export-page').addEventListener('click', exportAsStatic);
 
-    // 新窗口打开当前内容
-    document.getElementById('open-in-new-tab').addEventListener('click', () => {
-        const currentSrc = document.getElementById('content-frame').src;
-        if (currentSrc && currentSrc !== 'about:blank') {
-            window.open(currentSrc, '_blank');
-        } else {
-            alert('没有可打开的内容');
+    // 日期选择器变化
+    const datePicker = document.getElementById('date-picker');
+    datePicker.addEventListener('change', (e) => {
+        const selectedDate = new Date(e.target.value);
+        if (!isNaN(selectedDate)) {
+            const idx = getDayIndexFromDate(selectedDate);
+            setCurrentDayIndex(idx);
         }
     });
 
-    // 如果URL带参数跳转特定页面 (方便直接分享)
-    const urlParams = new URLSearchParams(window.location.search);
-    const page = urlParams.get('page');
-    if (page) {
-        const target = document.querySelector(`.tree-item[data-src="${page}"]`);
-        if (target) {
-            target.click();
-        }
-    }
+    // 初始化
+    loadProgress();
+    // 根据今天日期自动选择
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const startDateOnly = new Date(START_DATE);
+    startDateOnly.setHours(0,0,0,0);
+    let initIndex = getDayIndexFromDate(today);
+    // 如果今天早于起始日，则显示 Day1
+    if (today < startDateOnly) initIndex = 0;
+    setCurrentDayIndex(initIndex);
 </script>
 </body>
 </html>
