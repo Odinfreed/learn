@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>渗透测试学习导航 | 问题驱动实战路线</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Fira Code', 'Cascadia Code', monospace, system-ui;
+            background: #1e1e2f;
+            color: #e0e0e0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 整体布局 */
+        .app {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        /* 侧边栏 (文件树风格) */
+        .sidebar {
+            width: 320px;
+            background: #11111f;
+            border-right: 1px solid #2a2a3a;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px 16px;
+            background: #0b0b14;
+            border-bottom: 1px solid #2a2a3a;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            font-weight: 600;
+            color: #4c9aff;
+        }
+
+        .sidebar-header p {
+            font-size: 0.75rem;
+            color: #8a8aa5;
+            margin-top: 6px;
+        }
+
+        /* 日程树 */
+        .schedule-tree {
+            padding: 16px 12px;
+            flex: 1;
+        }
+
+        .tree-category {
+            margin-bottom: 24px;
+        }
+
+        .tree-category-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: #7c7c9c;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            padding-left: 8px;
+        }
+
+        .tree-item {
+            display: block;
+            padding: 8px 12px;
+            margin: 2px 0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #cdcdff;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .tree-item:hover {
+            background: #2a2a3a;
+            color: white;
+            padding-left: 20px;
+        }
+
+        .tree-item.active {
+            background: #2a2a5a;
+            color: #bbd9ff;
+            border-left: 3px solid #4c9aff;
+        }
+
+        .tree-item .badge {
+            float: right;
+            font-size: 0.7rem;
+            background: #2a2a3a;
+            padding: 2px 6px;
+            border-radius: 20px;
+            color: #aaa;
+        }
+
+        .tree-item.completed .badge {
+            background: #2e6b3e;
+            color: #b0ffb0;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            background: #1a1a2a;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .toolbar {
+            background: #0f0f1a;
+            padding: 10px 20px;
+            border-bottom: 1px solid #2a2a3a;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+
+        .toolbar button {
+            background: #2a2a3a;
+            border: none;
+            color: #ddd;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: monospace;
+            transition: 0.2s;
+        }
+
+        .toolbar button:hover {
+            background: #3a3a5a;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #1e1e2e;
+        }
+
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #11111f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4c4c6e;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>📡 渗透·问题驱动</h2>
+            <p>从实战出发 · 每日一关</p>
+        </div>
+        <div class="schedule-tree">
+            <!-- 总览与今日入口 -->
+            <div class="tree-category">
+                <div class="tree-category-title">📌 导航</div>
+                <a href="#" class="tree-item" data-src="total_schedule.html">
+                    📅 总日程规划 · 知识体系
+                </a>
+                <a href="#" class="tree-item active" data-src="today_schedule.html">
+                    🚀 今日任务：环境搭建
+                </a>
+            </div>
+
+            <!-- 每日任务列表 (预置30天链接，按需创建文件) -->
+            <div class="tree-category">
+                <div class="tree-category-title">🗓️ 实战日程 (1~30天)</div>
+                <!-- 动态生成1~30天链接，便于维护 -->
+                <div id="daily-links"></div>
+            </div>
+
+            <!-- 资源/工具 -->
+            <div class="tree-category">
+                <div class="tree-category-title">🛠️ 工具链</div>
+                <a href="https://www.kali.org/get-kali/" class="tree-item" target="_blank">Kali Linux 镜像</a>
+                <a href="https://sourceforge.net/projects/metasploitable/" class="tree-item" target="_blank">Metasploitable 2</a>
+                <a href="https://portswigger.net/burp/communitydownload" class="tree-item" target="_blank">Burp Suite</a>
+                <a href="https://github.com/opsdisk/metagoofil" class="tree-item" target="_blank">信息收集工具集</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="toolbar">
+            <span>📂 当前文档：</span>
+            <span id="current-doc-name">今日任务：环境搭建</span>
+            <button id="open-in-new-tab">🔗 新窗口打开</button>
+        </div>
+        <iframe id="content-frame" src="today_schedule.html" title="学习内容"></iframe>
+    </div>
+</div>
+
+<script>
+    // 生成每日链接 (day1.html ~ day30.html)
+    const dailyContainer = document.getElementById('daily-links');
+    for (let i = 1; i <= 30; i++) {
+        const dayNum = i.toString().padStart(2, '0');
+        const link = document.createElement('a');
+        link.href = '#';
+        link.className = 'tree-item';
+        link.setAttribute('data-src', `day${i}.html`);
+        // 根据实际进度标记已完成(演示标记前1天为完成，可根据需要调整)
+        if (i === 1) {
+            link.innerHTML = `📘 Day ${dayNum} · 环境搭建 <span class="badge">今日</span>`;
+        } else if (i < 1) {
+            link.innerHTML = `✅ Day ${dayNum} · 待命名 <span class="badge">已完成</span>`;
+            link.classList.add('completed');
+        } else {
+            link.innerHTML = `📄 Day ${dayNum} · 待规划 <span class="badge">未开始</span>`;
+        }
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const src = link.getAttribute('data-src');
+            document.getElementById('content-frame').src = src;
+            // 更新高亮
+            document.querySelectorAll('.tree-item').forEach(el => el.classList.remove('active'));
+            link.classList.add('active');
+            document.getElementById('current-doc-name').innerText = link.innerText.split('·')[0].trim();
+        });
+        dailyContainer.appendChild(link);
+    }
+
+    // 总日程和今日任务的点击处理
+    document.querySelectorAll('.tree-item[data-src]').forEach(item => {
+        if (!item.getAttribute('data-src')) return;
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            const src = item.getAttribute('data-src');
+            document.getElementById('content-frame').src = src;
+            document.querySelectorAll('.tree-item').forEach(el => el.classList.remove('active'));
+            item.classList.add('active');
+            document.getElementById('current-doc-name').innerText = item.innerText.split('·')[0].trim();
+        });
+    });
+
+    // 新窗口打开当前内容
+    document.getElementById('open-in-new-tab').addEventListener('click', () => {
+        const currentSrc = document.getElementById('content-frame').src;
+        if (currentSrc && currentSrc !== 'about:blank') {
+            window.open(currentSrc, '_blank');
+        } else {
+            alert('没有可打开的内容');
+        }
+    });
+
+    // 如果URL带参数跳转特定页面 (方便直接分享)
+    const urlParams = new URLSearchParams(window.location.search);
+    const page = urlParams.get('page');
+    if (page) {
+        const target = document.querySelector(`.tree-item[data-src="${page}"]`);
+        if (target) {
+            target.click();
+        }
+    }
+</script>
+</body>
+</html>
