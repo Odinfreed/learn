@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Day 2 · 信息收集（主动扫描）</title>
+    <title>Day 1 · 渗透测试环境搭建</title>
     <style>
         * {
             margin: 0;
@@ -18,7 +18,7 @@
             line-height: 1.5;
         }
         .container {
-            max-width: 1200px;
+            max-width: 1300px;
             margin: 0 auto;
         }
         h1 {
@@ -32,73 +32,128 @@
             margin-bottom: 2rem;
             font-size: 0.9rem;
         }
-        .card {
+        /* 阶段卡片 */
+        .stage {
             background: #11111f;
             border-radius: 20px;
             padding: 1.5rem;
             margin-bottom: 2rem;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
-        .card h2 {
+        .stage h2 {
             color: #bbd9ff;
             border-left: 4px solid #4c9aff;
             padding-left: 0.8rem;
             margin-bottom: 1rem;
         }
-        .card h3 {
+        .stage h3 {
             color: #9eb3ff;
             margin: 1rem 0 0.5rem 0;
         }
-        .checklist {
-            list-style: none;
-            padding: 0;
+        /* 命令块 */
+        .command-block {
+            background: #0a0a14;
+            border-radius: 12px;
+            margin: 1rem 0;
+            position: relative;
         }
-        .checklist li {
-            margin: 0.8rem 0;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
+        .command-block pre {
+            background: transparent;
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            margin: 0;
         }
-        .checklist input[type="checkbox"] {
-            width: 1.2rem;
-            height: 1.2rem;
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: #2a2a3a;
+            border: none;
+            color: #ddd;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
             cursor: pointer;
+            font-size: 0.7rem;
         }
-        .checklist label {
-            cursor: pointer;
-            flex: 1;
+        .copy-btn:hover {
+            background: #4c9aff;
+            color: #111;
         }
-        .question-box textarea {
+        /* 思考区域 */
+        .question-box {
+            background: #1a1a2a;
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .question-box p {
+            font-weight: bold;
+            color: #ffb86c;
+            margin-bottom: 0.5rem;
+        }
+        .answer-input {
             width: 100%;
             background: #0a0a14;
             border: 1px solid #2a2a3a;
             color: #e0e0e0;
-            padding: 0.8rem;
-            border-radius: 12px;
+            padding: 0.6rem;
+            border-radius: 8px;
             font-family: monospace;
             resize: vertical;
-            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
         }
+        .show-answer {
+            background: #2a2a5a;
+            border: none;
+            color: #bbd9ff;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .answer-text {
+            background: #0a0a2a;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            display: none;
+            white-space: pre-wrap;
+            color: #b0b0d0;
+        }
+        /* 截图区域 */
         .screenshot-area {
+            margin: 1rem 0;
+        }
+        .screenshot-input {
+            width: 100%;
+            background: #0a0a14;
+            border: 1px solid #2a2a3a;
+            color: #e0e0e0;
+            padding: 0.6rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            resize: vertical;
+        }
+        .screenshot-preview {
             display: flex;
             flex-wrap: wrap;
             gap: 1rem;
-            margin-top: 1rem;
+            margin-top: 0.5rem;
         }
-        .screenshot-item {
+        .preview-img {
             position: relative;
-            background: #0a0a14;
-            border-radius: 12px;
-            padding: 0.5rem;
-            border: 1px solid #2a2a3a;
             max-width: 200px;
-        }
-        .screenshot-item img {
-            max-width: 100%;
+            background: #0a0a14;
             border-radius: 8px;
-            display: block;
+            padding: 0.2rem;
         }
-        .delete-screenshot {
+        .preview-img img {
+            max-width: 100%;
+            border-radius: 6px;
+        }
+        .del-img {
             position: absolute;
             top: -8px;
             right: -8px;
@@ -106,50 +161,23 @@
             color: white;
             border: none;
             border-radius: 50%;
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
             line-height: 1;
         }
-        .add-screenshot {
+        .upload-btn {
             background: #2a2a3a;
-            border: 1px dashed #6c6c8c;
-            border-radius: 12px;
-            padding: 0.8rem;
-            text-align: center;
+            border: none;
+            color: #ddd;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
             cursor: pointer;
-            transition: 0.2s;
-            width: 120px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
+            font-size: 0.7rem;
+            margin-left: 0.5rem;
         }
-        .add-screenshot:hover {
-            background: #3a3a5a;
-        }
-        code, pre {
-            background: #0a0a14;
-            padding: 0.2rem 0.4rem;
-            border-radius: 6px;
-            font-family: 'Fira Code', monospace;
-        }
-        pre {
-            padding: 1rem;
-            overflow-x: auto;
-            margin: 0.5rem 0;
-        }
-        .tip {
-            background: #2a2a5a;
-            padding: 12px;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-        hr {
-            border-color: #2a2a3a;
-            margin: 2rem 0;
-        }
+        /* 工具栏 */
         .toolbar {
             display: flex;
             gap: 1rem;
@@ -179,6 +207,33 @@
             display: inline-block;
             margin-left: 1rem;
         }
+        a {
+            color: #6cb4ff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        hr {
+            border-color: #2a2a3a;
+            margin: 2rem 0;
+        }
+        .tip {
+            background: #2a2a5a;
+            padding: 12px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .checklist {
+            list-style: none;
+            margin-top: 1rem;
+        }
+        .checklist li {
+            margin: 0.5rem 0;
+        }
+        .checklist input {
+            margin-right: 0.8rem;
+        }
     </style>
 </head>
 <body>
@@ -189,179 +244,333 @@
         <span class="progress-badge" id="progress-badge">进度: 0%</span>
     </div>
 
-    <h1>🔍 Day 2 · 信息收集（主动扫描）</h1>
-    <div class="subtitle">预计耗时：6-8小时 | 核心问题：在发动攻击前，如何尽可能多地了解目标？</div>
+    <h1>📡 Day 1 · 渗透测试环境搭建</h1>
+    <div class="subtitle">预计耗时：6-8小时 | 核心问题：如何搭建一个合法、可控的渗透测试实验室？</div>
 
-    <!-- 今日目标 -->
-    <div class="card">
-        <h2>🎯 今日目标</h2>
+    <!-- 阶段1：虚拟化基础 -->
+    <div class="stage" id="stage1">
+        <h2>阶段一：虚拟化基础与VMware安装（预计1小时）</h2>
+        <p>渗透测试需要隔离的环境，避免影响主操作系统。虚拟化技术让我们在一台物理机上同时运行多个独立系统。</p>
+        <h3>📌 任务</h3>
         <ul>
-            <li>掌握 Nmap 高级扫描技术（全端口、服务识别、脚本扫描）</li>
-            <li>学习操作系统识别、服务版本探测原理</li>
-            <li>使用 Nmap NSE 脚本进行漏洞探测</li>
-            <li>结合其他工具（如 masscan、nc）进行补充扫描</li>
-            <li>编写一份规范的资产报告</li>
+            <li>理解虚拟机网络模式（桥接、NAT、仅主机）</li>
+            <li>下载并安装 VMware Workstation Pro（<a href="https://support.broadcom.com/group/ecx/productdownloads" target="_blank">官方免费下载地址</a>）</li>
         </ul>
+        <div class="command-block">
+            <pre><code># 安装完成后，在Windows中检查VMware服务是否运行
+services.msc
+# 确保 VMware NAT Service 和 VMware DHCP Service 正在运行</code></pre>
+            <button class="copy-btn" data-cmd="services.msc">📋 复制</button>
+        </div>
+        <div class="question-box">
+            <p>💡 思考问题1：NAT模式和桥接模式的主要区别是什么？在渗透测试中，为什么通常使用NAT模式？</p>
+            <textarea class="answer-input" placeholder="在此写下你的思考..."></textarea>
+            <button class="show-answer">📖 显示参考答案</button>
+            <div class="answer-text">
+                <strong>参考答案：</strong><br>
+                NAT模式：虚拟机通过宿主机共享IP访问外部网络，宿主机与虚拟机可以通信，但外部网络无法直接访问虚拟机。适合实验室环境，安全性高。<br>
+                桥接模式：虚拟机与宿主机处于同一局域网，拥有独立IP，外部可直接访问。在渗透测试中，NAT模式更常用，因为它避免干扰外部网络，且便于与靶机隔离。
+            </div>
+        </div>
+        <div class="screenshot-area">
+            <div class="screenshot-input-group">
+                <textarea class="screenshot-input" placeholder="粘贴截图（base64）或图片URL..."></textarea>
+                <button class="upload-btn">📷 上传图片</button>
+                <input type="file" accept="image/*" style="display:none;">
+            </div>
+            <div class="screenshot-preview"></div>
+        </div>
     </div>
 
-    <!-- 详细步骤 -->
-    <div class="card">
-        <h2>⚙️ 实战步骤（6小时深度版）</h2>
-        
-        <h3>阶段一：Nmap 基础回顾与高级选项（1.5小时）</h3>
-        <p>复习 Day 1 的扫描命令，深入学习以下参数：</p>
-        <pre><code># 全端口扫描（65535个端口，速度适中）
+    <!-- 阶段2：部署Kali Linux -->
+    <div class="stage" id="stage2">
+        <h2>阶段二：部署Kali Linux攻击机（预计1.5小时）</h2>
+        <p>Kali Linux是专为渗透测试设计的操作系统，内置600+工具。我们使用官方预置的虚拟机镜像，避免繁琐安装。</p>
+        <h3>📌 任务</h3>
+        <ul>
+            <li>下载Kali Linux VMware镜像：<a href="https://www.kali.org/get-kali/#kali-virtual-machines" target="_blank">Kali官网下载页</a>（选择VMware标签）</li>
+            <li>解压并导入VMware，设置内存至少2GB，网络适配器NAT模式</li>
+            <li>启动并登录（用户名kali，密码kali）</li>
+            <li>设置root密码并更新系统</li>
+        </ul>
+        <div class="command-block">
+            <pre><code># 切换到root用户
+sudo su
+# 设置root密码
+passwd root
+# 更新软件源（可选，若网络慢可跳过）
+apt update && apt upgrade -y
+# 安装常用工具（可选）
+apt install -y vim git</code></pre>
+            <button class="copy-btn" data-cmd="sudo su">📋 复制</button>
+        </div>
+        <div class="question-box">
+            <p>💡 思考问题2：为什么Kali Linux默认不推荐使用root用户？使用普通用户执行sudo有什么安全优势？</p>
+            <textarea class="answer-input" placeholder="写下你的思考..."></textarea>
+            <button class="show-answer">📖 显示参考答案</button>
+            <div class="answer-text">
+                <strong>参考答案：</strong><br>
+                使用普通用户可以降低误操作风险，避免因权限过高导致系统损坏。sudo可以细粒度控制权限，并记录操作日志，提高安全性。
+            </div>
+        </div>
+        <div class="screenshot-area">
+            <div class="screenshot-input-group">
+                <textarea class="screenshot-input" placeholder="粘贴截图..."></textarea>
+                <button class="upload-btn">📷 上传图片</button>
+                <input type="file" accept="image/*" style="display:none;">
+            </div>
+            <div class="screenshot-preview"></div>
+        </div>
+    </div>
+
+    <!-- 阶段3：部署Metasploitable 2靶机 -->
+    <div class="stage" id="stage3">
+        <h2>阶段三：部署Metasploitable 2靶机（预计1小时）</h2>
+        <p>Metasploitable 2是一个故意留有大量漏洞的Linux虚拟机，专门用于练习渗透测试。</p>
+        <h3>📌 任务</h3>
+        <ul>
+            <li>下载Metasploitable 2：<a href="https://sourceforge.net/projects/metasploitable/" target="_blank">SourceForge下载页</a>（约800MB）</li>
+            <li>使用7-Zip解压（避免文件名损坏）</li>
+            <li>在VMware中打开.vmx文件，设置网络适配器为NAT模式（与Kali一致）</li>
+            <li>启动虚拟机，登录：用户名 <code>msfadmin</code>，密码 <code>msfadmin</code></li>
+            <li>查看IP地址：<code>ifconfig</code></li>
+        </ul>
+        <div class="command-block">
+            <pre><code># 在Metasploitable中查看IP
+ifconfig eth0
+# 示例输出：inet addr:192.168.x.x</code></pre>
+            <button class="copy-btn" data-cmd="ifconfig eth0">📋 复制</button>
+        </div>
+        <div class="question-box">
+            <p>💡 思考问题3：Metasploitable 2故意保留大量漏洞，这反映了真实世界中的什么问题？</p>
+            <textarea class="answer-input" placeholder="写下你的思考..."></textarea>
+            <button class="show-answer">📖 显示参考答案</button>
+            <div class="answer-text">
+                <strong>参考答案：</strong><br>
+                真实环境中很多系统因未及时更新、配置错误或使用过时软件而存在漏洞。Metasploitable模拟了这种“不安全的默认配置”，警示我们要及时打补丁、最小化服务、定期安全审计。
+            </div>
+        </div>
+        <div class="screenshot-area">
+            <div class="screenshot-input-group">
+                <textarea class="screenshot-input" placeholder="粘贴截图..."></textarea>
+                <button class="upload-btn">📷 上传图片</button>
+                <input type="file" accept="image/*" style="display:none;">
+            </div>
+            <div class="screenshot-preview"></div>
+        </div>
+    </div>
+
+    <!-- 阶段4：网络连通性验证 -->
+    <div class="stage" id="stage4">
+        <h2>阶段四：网络连通性验证（预计30分钟）</h2>
+        <p>确保Kali与Metasploitable可以互相ping通，这是后续一切攻击的基础。</p>
+        <h3>📌 任务</h3>
+        <ul>
+            <li>在Kali中ping靶机IP</li>
+            <li>如果不通，检查网络适配器是否为同一NAT模式，重启VMware网络服务</li>
+        </ul>
+        <div class="command-block">
+            <pre><code># 在Kali终端中执行
+ping 靶机IP -c 4</code></pre>
+            <button class="copy-btn" data-cmd="ping 靶机IP -c 4">📋 复制</button>
+        </div>
+        <div class="tip">
+            💡 如果ping不通，尝试：<br>
+            1. 确认两台虚拟机网络适配器均为NAT模式。<br>
+            2. 在Windows服务中重启VMware NAT Service和VMware DHCP Service。<br>
+            3. 在Kali中执行 <code>systemctl restart networking</code><br>
+            4. 在Metasploitable中执行 <code>sudo ifdown eth0 && sudo ifup eth0</code>
+        </div>
+        <div class="question-box">
+            <p>💡 思考问题4：为什么在虚拟机中使用NAT模式就能实现互通，而桥接模式也可以？它们各有什么优缺点？</p>
+            <textarea class="answer-input" placeholder="写下你的思考..."></textarea>
+            <button class="show-answer">📖 显示参考答案</button>
+            <div class="answer-text">
+                <strong>参考答案：</strong><br>
+                NAT模式下，虚拟机通过宿主机NAT设备通信，同一NAT网络内的虚拟机可以互通，且对外部网络不可见，安全。<br>
+                桥接模式下，虚拟机直接接入物理网络，拥有独立IP，可以被外部直接访问，风险较高，但适合模拟真实服务器场景。
+            </div>
+        </div>
+        <div class="screenshot-area">
+            <div class="screenshot-input-group">
+                <textarea class="screenshot-input" placeholder="粘贴截图..."></textarea>
+                <button class="upload-btn">📷 上传图片</button>
+                <input type="file" accept="image/*" style="display:none;">
+            </div>
+            <div class="screenshot-preview"></div>
+        </div>
+    </div>
+
+    <!-- 阶段5：首次扫描与侦察 -->
+    <div class="stage" id="stage5">
+        <h2>阶段五：首次扫描与侦察（预计1.5小时）</h2>
+        <p>使用nmap对靶机进行扫描，发现开放端口和服务版本，这是信息收集的第一步。</p>
+        <h3>📌 任务</h3>
+        <ul>
+            <li>执行基础扫描</li>
+            <li>执行全端口扫描（耗时较长）</li>
+            <li>分析扫描结果，记录高危服务</li>
+        </ul>
+        <div class="command-block">
+            <pre><code># 基础扫描（端口、服务版本、操作系统）
+nmap -sV -O 靶机IP
+
+# 全端口扫描（65535个端口，约10-15分钟）
 nmap -p- -T4 靶机IP
 
-# 服务版本深度探测
-nmap -sV --version-intensity 9 靶机IP
-
-# 操作系统精准识别
-nmap -O --osscan-guess 靶机IP
-
-# 同时进行端口、服务、操作系统扫描并输出所有格式
-nmap -sS -sV -O -p- -oA full_scan 靶机IP</code></pre>
-        <p>尝试不同的扫描类型：-sS (SYN半开)、-sT (TCP全连接)、-sU (UDP扫描)。注意 UDP 扫描耗时较长。</p>
-        <div class="tip">
-            💡 思考：为什么 SYN 扫描更隐蔽？全端口扫描对目标网络的影响是什么？
+# 保存结果
+nmap -sV -O -oA metasploitable_scan 靶机IP</code></pre>
+            <button class="copy-btn" data-cmd="nmap -sV -O 靶机IP">📋 复制</button>
         </div>
-
-        <h3>阶段二：Nmap 脚本引擎（NSE）实战（2小时）</h3>
-        <p>NSE 是 Nmap 最强大的功能，包含数百个安全检测脚本。</p>
-        <pre><code># 列出所有脚本分类
-ls /usr/share/nmap/scripts/ | grep -v .nse
-
-# 使用默认安全脚本
-nmap -sC 靶机IP
-
-# 针对特定服务使用脚本（如 SMB）
-nmap --script smb-os-discovery 靶机IP
-nmap --script smb-vuln* 靶机IP
-
-# 使用 http 相关脚本
-nmap --script http-title,http-headers,http-enum 靶机IP
-
-# 尝试暴力破解（谨慎使用）
-nmap --script ssh-brute --script-args userdb=users.txt,passdb=pass.txt 靶机IP</code></pre>
-        <p>重点练习：</p>
-        <ul>
-            <li>使用 <code>http-enum</code> 枚举 Web 目录</li>
-            <li>使用 <code>smb-vuln-ms17-010</code> 检测永恒之蓝漏洞</li>
-            <li>使用 <code>ftp-anon</code> 检测匿名 FTP 登录</li>
-        </ul>
-        <div class="tip">
-            💡 深入思考：脚本扫描的结果是否完全可靠？如何避免误报？
-        </div>
-
-        <h3>阶段三：扫描结果分析与资产报告（1.5小时）</h3>
-        <p>收集所有扫描信息，整理成结构化报告。</p>
-        <pre><code># 将扫描结果保存为 grepable 格式
-nmap -oG output.gnmap 靶机IP
-
-# 使用 awk 提取开放端口列表
-grep "open" output.gnmap | awk '{print $2,$3,$4,$5}'</code></pre>
-        <p>报告应包含：</p>
-        <ul>
-            <li>目标 IP、开放端口及服务版本</li>
-            <li>操作系统猜测</li>
-            <li>每个服务的潜在风险点（如 vsftpd 2.3.4 后门）</li>
-            <li>截图关键扫描结果</li>
-        </ul>
-        <div class="tip">
-            💡 参考行业报告模板，尝试用 Markdown 或 Word 编写。
-        </div>
-
-        <h3>阶段四：补充工具实战（1小时）</h3>
-        <p>学习使用其他信息收集工具，拓宽视野。</p>
-        <ul>
-            <li><strong>masscan</strong>：极速端口扫描器，适合大规模扫描</li>
-            <li><strong>nc (netcat)</strong>：手动 Banner 抓取</li>
-            <li><strong>whatweb</strong>：Web 技术栈识别</li>
-        </ul>
-        <pre><code># masscan 快速扫描（1000个常用端口）
-masscan -p1-1000 --rate=1000 靶机IP
-
-# nc 抓取 banner
-nc -nv 靶机IP 21
-
-# whatweb 识别网站框架
-whatweb http://靶机IP</code></pre>
-        <div class="tip">
-            💡 思考：masscan 与 nmap 的优缺点对比？什么场景下适合使用 masscan？
-        </div>
-    </div>
-
-    <!-- 验收清单 -->
-    <div class="card">
-        <h2>✅ 验收清单</h2>
-        <ul class="checklist" id="checklist-container">
-            <li><input type="checkbox" id="check0"><label for="check0">能独立使用 nmap 执行全端口扫描并分析结果</label></li>
-            <li><input type="checkbox" id="check1"><label for="check1">成功使用至少 5 个不同的 NSE 脚本，并理解其作用</label></li>
-            <li><input type="checkbox" id="check2"><label for="check2">准确识别出 Metasploitable 2 上的高危服务（vsftpd, Samba, MySQL）</label></li>
-            <li><input type="checkbox" id="check3"><label for="check3">能区分 SYN 扫描和 TCP 全连接扫描的差异</label></li>
-            <li><input type="checkbox" id="check4"><label for="check4">编写了一份完整的资产报告（包含 IP、端口、服务、建议）</label></li>
-            <li><input type="checkbox" id="check5"><label for="check5">使用 masscan 或 nc 进行了补充扫描/抓取</label></li>
-            <li><input type="checkbox" id="check6"><label for="check6">理解了信息收集在渗透测试中的重要性，并能列出至少 3 种被动信息收集方法</label></li>
-        </ul>
-    </div>
-
-    <!-- 问题记录 -->
-    <div class="card">
-        <h2>📝 问题记录</h2>
+        <p>预期结果应包含：21(FTP vsftpd 2.3.4), 22(SSH), 80(HTTP), 445(SMB), 3306(MySQL)等。</p>
         <div class="question-box">
-            <textarea id="question-text" rows="6" placeholder="记录今天遇到的问题、新发现的扫描技巧、遇到的错误及解决方法..."></textarea>
+            <p>💡 思考问题5：从扫描结果中，你看到了哪些高危服务？这些服务可能带来什么风险？</p>
+            <textarea class="answer-input" placeholder="写下你的思考..."></textarea>
+            <button class="show-answer">📖 显示参考答案</button>
+            <div class="answer-text">
+                <strong>参考答案：</strong><br>
+                vsftpd 2.3.4存在后门漏洞，可被直接利用获取shell；Samba版本较低，可能存在远程代码执行；MySQL默认root空密码可被利用；Apache 2.2.8也存在多个已知漏洞。这些都是渗透测试的突破点。
+            </div>
+        </div>
+        <div class="screenshot-area">
+            <div class="screenshot-input-group">
+                <textarea class="screenshot-input" placeholder="粘贴截图..."></textarea>
+                <button class="upload-btn">📷 上传图片</button>
+                <input type="file" accept="image/*" style="display:none;">
+            </div>
+            <div class="screenshot-preview"></div>
         </div>
     </div>
 
-    <!-- 截图区域 -->
-    <div class="card">
-        <h2>📸 截图记录</h2>
-        <div id="screenshot-area" class="screenshot-area"></div>
-        <div class="add-screenshot" id="add-screenshot-btn">
-            📷 上传截图<br>
-            <span style="font-size:0.7rem;">点击或粘贴 (Ctrl+V)</span>
+    <!-- 阶段6：创建快照与法律边界 -->
+    <div class="stage" id="stage6">
+        <h2>阶段六：环境备份与法律合规（预计30分钟）</h2>
+        <p>创建虚拟机快照以便随时恢复初始状态，并学习渗透测试的法律边界。</p>
+        <h3>📌 任务</h3>
+        <ul>
+            <li>在VMware中为Kali和Metasploitable分别创建快照（关闭虚拟机后操作）</li>
+            <li>阅读相关法律知识：<a href="https://www.offensive-security.com/legal/" target="_blank">Offensive Security 法律声明</a></li>
+        </ul>
+        <div class="question-box">
+            <p>💡 思考问题6：为什么在开始渗透测试前必须获得授权？未经授权的渗透测试可能带来什么后果？</p>
+            <textarea class="answer-input" placeholder="写下你的思考..."></textarea>
+            <button class="show-answer">📖 显示参考答案</button>
+            <div class="answer-text">
+                <strong>参考答案：</strong><br>
+                未经授权扫描或攻击他人系统属于违法行为，可能触犯《网络安全法》《刑法》等，面临法律责任。合法渗透测试必须签订授权协议，明确测试范围和边界。
+            </div>
         </div>
-        <input type="file" id="screenshot-file-input" accept="image/*" multiple style="display:none">
+        <div class="screenshot-area">
+            <div class="screenshot-input-group">
+                <textarea class="screenshot-input" placeholder="粘贴截图..."></textarea>
+                <button class="upload-btn">📷 上传图片</button>
+                <input type="file" accept="image/*" style="display:none;">
+            </div>
+            <div class="screenshot-preview"></div>
+        </div>
+    </div>
+
+    <!-- 最终验收清单 -->
+    <div class="stage">
+        <h2>✅ 今日验收清单</h2>
+        <ul class="checklist" id="checklist-container">
+            <li><input type="checkbox" id="check0"> VMware Workstation 安装成功，能启动虚拟机</li>
+            <li><input type="checkbox" id="check1"> Kali Linux 虚拟机导入成功，可登录桌面</li>
+            <li><input type="checkbox" id="check2"> Metasploitable 2 导入成功，可登录 msfadmin</li>
+            <li><input type="checkbox" id="check3"> 两台虚拟机网络互通（Kali ping 通靶机）</li>
+            <li><input type="checkbox" id="check4"> 成功执行 nmap 扫描，并记录了至少5个开放端口</li>
+            <li><input type="checkbox" id="check5"> 创建了虚拟机快照，了解快照作用</li>
+            <li><input type="checkbox" id="check6"> 理解了 NAT/桥接模式的区别</li>
+            <li><input type="checkbox" id="check7"> 阅读了渗透测试法律边界相关资料</li>
+        </ul>
     </div>
 
     <hr>
-    <p>📌 明天预告：Day 3 · 被动信息收集 —— 利用 OSINT 从公开渠道挖掘目标信息。</p>
+    <p>📌 明天预告：Day 2 · 信息收集（主动扫描）—— 如何像黑客一样“绘制”目标全貌？</p>
 </div>
 
 <script>
-    // ==================== 进度保存逻辑 ====================
-    const STORAGE_KEY = 'day2_progress';
+    // ==================== 数据存储 ====================
+    const STORAGE_KEY = 'day1_progress_v2';
     let progress = {
         checklist: [],
-        question: '',
-        screenshots: []
+        stages: []  // 每个阶段存储 { answers: [], screenshots: [] }
     };
 
+    // 初始化阶段结构
+    const stages = document.querySelectorAll('.stage');
+    for (let i = 0; i < stages.length; i++) {
+        if (!progress.stages[i]) {
+            progress.stages[i] = { answers: [], screenshots: [] };
+        }
+        // 每个阶段可能有多个思考和截图区域，动态处理
+        const stageDiv = stages[i];
+        const answerAreas = stageDiv.querySelectorAll('.answer-input');
+        const screenshotGroups = stageDiv.querySelectorAll('.screenshot-input-group');
+        // 初始化存储数组长度
+        if (progress.stages[i].answers.length < answerAreas.length) {
+            progress.stages[i].answers = new Array(answerAreas.length).fill('');
+        }
+        if (progress.stages[i].screenshots.length < screenshotGroups.length) {
+            progress.stages[i].screenshots = new Array(screenshotGroups.length).fill([]);
+        }
+    }
+
+    // 加载进度
     function loadProgress() {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
-            progress = JSON.parse(saved);
-            const checkboxes = document.querySelectorAll('.checklist input');
+            const loaded = JSON.parse(saved);
+            progress = loaded;
+            // 恢复复选框
+            const checkboxes = document.querySelectorAll('#checklist-container input');
             checkboxes.forEach((cb, idx) => {
-                if (progress.checklist[idx] !== undefined) {
-                    cb.checked = progress.checklist[idx];
-                }
+                if (progress.checklist[idx] !== undefined) cb.checked = progress.checklist[idx];
             });
-            const textarea = document.getElementById('question-text');
-            if (textarea && progress.question) textarea.value = progress.question;
-            const area = document.getElementById('screenshot-area');
-            if (progress.screenshots && progress.screenshots.length) {
-                progress.screenshots.forEach(src => addScreenshotElement(src, area, false));
-            }
+            // 恢复思考和截图
+            stages.forEach((stage, stageIdx) => {
+                const answers = stage.querySelectorAll('.answer-input');
+                answers.forEach((ans, ansIdx) => {
+                    if (progress.stages[stageIdx] && progress.stages[stageIdx].answers[ansIdx]) {
+                        ans.value = progress.stages[stageIdx].answers[ansIdx];
+                    }
+                });
+                const screenshotGroups = stage.querySelectorAll('.screenshot-input-group');
+                screenshotGroups.forEach((group, groupIdx) => {
+                    const previewDiv = group.nextElementSibling;
+                    if (previewDiv && previewDiv.classList.contains('screenshot-preview')) {
+                        const screenshots = progress.stages[stageIdx]?.screenshots[groupIdx] || [];
+                        screenshots.forEach(src => addPreviewImage(src, previewDiv, stageIdx, groupIdx));
+                    }
+                });
+            });
         }
         updateProgressBadge();
     }
 
     function saveProgress() {
-        const checkboxes = document.querySelectorAll('.checklist input');
+        // 保存复选框
+        const checkboxes = document.querySelectorAll('#checklist-container input');
         progress.checklist = Array.from(checkboxes).map(cb => cb.checked);
-        const textarea = document.getElementById('question-text');
-        if (textarea) progress.question = textarea.value;
+        // 保存思考答案
+        stages.forEach((stage, stageIdx) => {
+            const answers = stage.querySelectorAll('.answer-input');
+            answers.forEach((ans, ansIdx) => {
+                if (!progress.stages[stageIdx]) progress.stages[stageIdx] = { answers: [], screenshots: [] };
+                progress.stages[stageIdx].answers[ansIdx] = ans.value;
+            });
+            // 截图已经实时保存，这里再同步一次（确保）
+            const screenshotGroups = stage.querySelectorAll('.screenshot-input-group');
+            screenshotGroups.forEach((group, groupIdx) => {
+                const previewDiv = group.nextElementSibling;
+                if (previewDiv && previewDiv.classList.contains('screenshot-preview')) {
+                    const imgs = previewDiv.querySelectorAll('img');
+                    const srcs = Array.from(imgs).map(img => img.src);
+                    if (!progress.stages[stageIdx]) progress.stages[stageIdx] = { answers: [], screenshots: [] };
+                    progress.stages[stageIdx].screenshots[groupIdx] = srcs;
+                }
+            });
+        });
         localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
         updateProgressBadge();
     }
@@ -374,113 +583,150 @@ whatweb http://靶机IP</code></pre>
         if (badge) badge.innerText = `进度: ${percent}%`;
     }
 
-    function addScreenshotElement(src, container, autoSave = true) {
+    // 辅助函数：添加预览图片
+    function addPreviewImage(src, container, stageIdx, groupIdx) {
         const div = document.createElement('div');
-        div.className = 'screenshot-item';
-        div.innerHTML = `
-            <img src="${src}" alt="screenshot">
-            <button class="delete-screenshot" title="删除">✖</button>
-        `;
-        const delBtn = div.querySelector('.delete-screenshot');
+        div.className = 'preview-img';
+        div.innerHTML = `<img src="${src}" style="max-width:200px;"><button class="del-img">✖</button>`;
+        const delBtn = div.querySelector('.del-img');
         delBtn.addEventListener('click', () => {
             div.remove();
-            const imgs = document.querySelectorAll('#screenshot-area .screenshot-item img');
-            progress.screenshots = Array.from(imgs).map(img => img.src);
-            if (autoSave) saveProgress();
+            // 更新存储
+            const imgs = container.querySelectorAll('img');
+            const srcs = Array.from(imgs).map(img => img.src);
+            if (!progress.stages[stageIdx]) progress.stages[stageIdx] = { answers: [], screenshots: [] };
+            progress.stages[stageIdx].screenshots[groupIdx] = srcs;
+            saveProgress();
         });
         container.appendChild(div);
-        if (autoSave) {
-            const imgs = document.querySelectorAll('#screenshot-area .screenshot-item img');
-            progress.screenshots = Array.from(imgs).map(img => img.src);
-            saveProgress();
-        }
+        // 存储更新
+        if (!progress.stages[stageIdx]) progress.stages[stageIdx] = { answers: [], screenshots: [] };
+        progress.stages[stageIdx].screenshots[groupIdx] = Array.from(container.querySelectorAll('img')).map(img => img.src);
+        saveProgress();
     }
 
+    // 初始化所有截图上传
     function initScreenshotHandlers() {
-        const addBtn = document.getElementById('add-screenshot-btn');
-        const fileInput = document.getElementById('screenshot-file-input');
-        const area = document.getElementById('screenshot-area');
+        const screenshotGroups = document.querySelectorAll('.screenshot-input-group');
+        screenshotGroups.forEach((group, groupIdx) => {
+            const textarea = group.querySelector('.screenshot-input');
+            const uploadBtn = group.querySelector('.upload-btn');
+            const fileInput = group.querySelector('input[type="file"]');
+            const previewDiv = group.nextElementSibling;
+            if (!previewDiv.classList.contains('screenshot-preview')) return;
 
-        addBtn.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', (e) => {
-            const files = Array.from(e.target.files);
-            files.forEach(file => {
-                if (file.type.startsWith('image/')) {
+            // 上传按钮触发文件选择
+            uploadBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file && file.type.startsWith('image/')) {
                     const reader = new FileReader();
-                    reader.onload = (ev) => addScreenshotElement(ev.target.result, area);
+                    reader.onload = (ev) => {
+                        const src = ev.target.result;
+                        addPreviewImage(src, previewDiv, groupIdx, groupIdx);
+                        textarea.value = src; // 同时将base64填入文本域
+                        saveProgress();
+                    };
                     reader.readAsDataURL(file);
                 }
+                fileInput.value = '';
             });
-            fileInput.value = '';
-        });
-        document.addEventListener('paste', (e) => {
-            const items = e.clipboardData.items;
-            for (let item of items) {
-                if (item.type.indexOf('image') !== -1) {
-                    const blob = item.getAsFile();
-                    const reader = new FileReader();
-                    reader.onload = (ev) => addScreenshotElement(ev.target.result, area);
-                    reader.readAsDataURL(blob);
-                    break;
+            // 粘贴事件监听全局，这里简化：允许用户直接在textarea粘贴base64，但为了体验，也可监听paste
+            textarea.addEventListener('paste', (e) => {
+                const items = e.clipboardData.items;
+                for (let item of items) {
+                    if (item.type.indexOf('image') !== -1) {
+                        const blob = item.getAsFile();
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                            const src = ev.target.result;
+                            addPreviewImage(src, previewDiv, groupIdx, groupIdx);
+                            textarea.value = src;
+                            saveProgress();
+                        };
+                        reader.readAsDataURL(blob);
+                        break;
+                    }
                 }
-            }
+            });
+            // 手动输入base64后，可提供一个按钮？或者实时监听变化，但为避免复杂，用户可点击“添加图片”按钮，我们也可以提供一个“从文本域添加”按钮
+            // 增加一个按钮：从文本域加载
+            const addFromTextBtn = document.createElement('button');
+            addFromTextBtn.textContent = '📥 从文本域添加';
+            addFromTextBtn.style.marginLeft = '0.5rem';
+            addFromTextBtn.style.background = '#2a2a3a';
+            addFromTextBtn.style.border = 'none';
+            addFromTextBtn.style.color = '#ddd';
+            addFromTextBtn.style.borderRadius = '6px';
+            addFromTextBtn.style.padding = '0.2rem 0.6rem';
+            addFromTextBtn.style.cursor = 'pointer';
+            addFromTextBtn.addEventListener('click', () => {
+                const val = textarea.value.trim();
+                if (val.startsWith('data:image') || val.startsWith('http')) {
+                    addPreviewImage(val, previewDiv, groupIdx, groupIdx);
+                } else {
+                    alert('请输入有效的图片base64或URL');
+                }
+            });
+            group.appendChild(addFromTextBtn);
         });
     }
 
+    // 一键复制
+    function initCopyButtons() {
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const cmd = btn.getAttribute('data-cmd');
+                navigator.clipboard.writeText(cmd).then(() => {
+                    btn.textContent = '✓ 已复制';
+                    setTimeout(() => btn.textContent = '📋 复制', 1500);
+                });
+            });
+        });
+    }
+
+    // 显示/隐藏答案
+    function initAnswerToggles() {
+        document.querySelectorAll('.show-answer').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const answerDiv = btn.nextElementSibling;
+                if (answerDiv && answerDiv.classList.contains('answer-text')) {
+                    answerDiv.style.display = answerDiv.style.display === 'block' ? 'none' : 'block';
+                }
+            });
+        });
+    }
+
+    // 自动保存思考输入
+    function bindAutoSave() {
+        document.querySelectorAll('.answer-input, .screenshot-input').forEach(el => {
+            el.addEventListener('input', saveProgress);
+        });
+        document.querySelectorAll('#checklist-container input').forEach(cb => {
+            cb.addEventListener('change', saveProgress);
+        });
+    }
+
+    // 重置进度
     function resetProgress() {
-        if (confirm('确定重置今天的全部进度吗？所有勾选、笔记、截图将被清空。')) {
+        if (confirm('确定重置今日所有进度？所有思考、截图、勾选将被清空。')) {
             localStorage.removeItem(STORAGE_KEY);
-            progress = { checklist: [], question: '', screenshots: [] };
             location.reload();
         }
     }
 
+    // 导出为静态网页
     function exportPage() {
-        const checkboxes = document.querySelectorAll('.checklist input');
-        const checklistState = Array.from(checkboxes).map(cb => cb.checked);
-        const questionText = document.getElementById('question-text').value;
-        const screenshots = [];
-        document.querySelectorAll('#screenshot-area .screenshot-item img').forEach(img => screenshots.push(img.src));
-
-        const exportHtml = `<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><title>渗透学习快照 - Day 2 信息收集</title>
-<style>
-body { background: #1e1e2f; color: #e0e0e0; font-family: monospace; padding: 2rem; }
-.card { background: #11111f; border-radius: 20px; padding: 1.5rem; margin-bottom: 2rem; }
-h1 { color: #4c9aff; }
-.checklist li { margin: 0.5rem 0; list-style: none; }
-.checklist li.completed { text-decoration: line-through; color: #8a8aa5; }
-.screenshot-area { display: flex; flex-wrap: wrap; gap: 1rem; }
-.screenshot-item img { max-width: 200px; border-radius: 8px; }
-</style>
-</head>
-<body>
-<div style="max-width:1200px;margin:0 auto">
-    <h1>🔍 渗透学习快照 · Day 2 信息收集</h1>
-    <p>导出时间：${new Date().toLocaleString()}</p>
-    <div class="card">
-        <h2>✅ 验收清单</h2>
-        <ul class="checklist">
-            ${document.querySelectorAll('.checklist label').length ? Array.from(document.querySelectorAll('.checklist label')).map((label, idx) => `<li class="${checklistState[idx] ? 'completed' : ''}">${checklistState[idx] ? '✔️ ' : '☐ '}${label.innerText}</li>`).join('') : ''}
-        </ul>
-    </div>
-    <div class="card">
-        <h2>📝 问题记录</h2>
-        <p style="white-space: pre-wrap;">${questionText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
-    </div>
-    <div class="card">
-        <h2>📸 截图记录</h2>
-        <div class="screenshot-area">${screenshots.map(src => `<div class="screenshot-item"><img src="${src}"></div>`).join('')}</div>
-    </div>
-</div>
-</body>
-</html>`;
-        const blob = new Blob([exportHtml], {type: 'text/html'});
+        const content = document.querySelector('.container').cloneNode(true);
+        // 移除按钮事件（避免导出后交互失效）
+        content.querySelectorAll('.copy-btn, .show-answer, .upload-btn, .del-img, .add-from-text').forEach(el => el.remove());
+        const html = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>渗透学习快照 - Day1</title><style>${document.querySelector('style').innerHTML}</style></head><body>${content.outerHTML}</body></html>`;
+        const blob = new Blob([html], {type: 'text/html'});
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
         link.href = url;
-        link.download = `pentest_day2_${new Date().toISOString().slice(0,10)}.html`;
+        link.download = `pentest_day1_${new Date().toISOString().slice(0,10)}.html`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -490,14 +736,10 @@ h1 { color: #4c9aff; }
     document.getElementById('reset-progress').addEventListener('click', resetProgress);
     document.getElementById('export-page').addEventListener('click', exportPage);
 
-    function bindAutoSave() {
-        document.querySelectorAll('.checklist input').forEach(cb => cb.addEventListener('change', saveProgress));
-        const textarea = document.getElementById('question-text');
-        if (textarea) textarea.addEventListener('input', saveProgress);
-    }
-
     loadProgress();
     initScreenshotHandlers();
+    initCopyButtons();
+    initAnswerToggles();
     bindAutoSave();
 </script>
 </body>
