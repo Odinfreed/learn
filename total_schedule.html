@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>总日程规划 | 渗透测试问题驱动路线</title>
+    <style>
+        body {
+            background: #1e1e2e;
+            color: #e4e4e7;
+            font-family: 'Segoe UI', 'Fira Code', monospace;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #4c9aff;
+            border-left: 5px solid #4c9aff;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        h2 {
+            color: #bbd9ff;
+            margin-top: 2rem;
+            border-bottom: 1px solid #3a3a5a;
+            padding-bottom: 0.5rem;
+        }
+        .milestone {
+            background: #2a2a3a;
+            border-radius: 16px;
+            padding: 1.2rem;
+            margin: 1.5rem 0;
+        }
+        .day-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .day-card {
+            background: #11111f;
+            border-radius: 12px;
+            padding: 12px 16px;
+            border-left: 4px solid #4c9aff;
+        }
+        .day-card h3 {
+            margin: 0 0 6px 0;
+            font-size: 1rem;
+        }
+        .day-card p {
+            font-size: 0.85rem;
+            color: #b0b0cc;
+            margin: 0;
+        }
+        .tag {
+            display: inline-block;
+            background: #2a2a5a;
+            border-radius: 20px;
+            padding: 2px 10px;
+            font-size: 0.7rem;
+            margin-top: 8px;
+        }
+        hr {
+            border-color: #2a2a3a;
+        }
+        a {
+            color: #6cb4ff;
+            text-decoration: none;
+        }
+        .knowledge-tree {
+            background: #0f0f1a;
+            padding: 1rem;
+            border-radius: 16px;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📅 渗透测试 30 天问题驱动实战规划</h1>
+    <p><strong>核心理念</strong>：每天解决一个核心问题，通过实战驱动知识内化。完成全部阶段即可独立完成完整渗透测试。</p>
+
+    <div class="milestone">
+        <h2>🎯 总体目标</h2>
+        <p>从零搭建实验室 → 信息收集 → 漏洞利用 → 权限提升 → 内网横向 → 报告输出 → 进阶专项。最终独立完成一次模拟渗透测试。</p>
+    </div>
+
+    <h2>📆 分阶段日程表</h2>
+    <div class="day-grid">
+        <!-- 阶段一：环境 -->
+        <div class="day-card"><h3>Day 1 · 环境搭建</h3><p>安装VMware/Kali/Metasploitable，网络互通，首次nmap扫描</p><span class="tag">✅ 基础</span></div>
+        <div class="day-card"><h3>Day 2 · 信息收集（主动扫描）</h3><p>Nmap高级选项、服务/系统识别，编写资产报告</p><span class="tag">🔍 信息收集</span></div>
+        <div class="day-card"><h3>Day 3 · 被动信息收集</h3><p>子域名枚举、whois、theHarvester，Google Hacking</p><span class="tag">🌐 OSINT</span></div>
+        <!-- 阶段二：漏洞发现 -->
+        <div class="day-card"><h3>Day 4 · 漏洞扫描器实战</h3><p>Nessus/OpenVAS扫描Metasploitable，解读报告</p><span class="tag">📡 扫描</span></div>
+        <div class="day-card"><h3>Day 5 · Web漏洞扫描（ZAP/Burp）</h3><p>配置代理，爬取站点，主动扫描与误报分析</p><span class="tag">🌐 Web</span></div>
+        <!-- 阶段三：漏洞利用 -->
+        <div class="day-card"><h3>Day 6 · Metasploit 初探</h3><p>利用vsftpd后门获取shell，meterpreter基础</p><span class="tag">💣 利用</span></div>
+        <div class="day-card"><h3>Day 7 · 手动SQL注入</h3><p>联合查询注入，获取数据库信息，写入webshell</p><span class="tag">💉 SQLi</span></div>
+        <div class="day-card"><h3>Day 8 · 文件上传与反弹shell</h3><p>绕过前端限制，上传一句话，蚁剑/冰蝎连接</p><span class="tag">📤 上传</span></div>
+        <div class="day-card"><h3>Day 9 · 命令注入与XSS</h3><p>命令注入getshell，存储型XSS窃取Cookie</p><span class="tag">⚡ 注入</span></div>
+        <!-- 阶段四：提权 -->
+        <div class="day-card"><h3>Day 10 · Linux 内核提权</h3><p>脏牛漏洞实践，searchsploit使用</p><span class="tag">🐄 提权</span></div>
+        <div class="day-card"><h3>Day 11 · 服务提权与SUID</h3><p>查找SUID文件，利用mysql/nmap提权</p><span class="tag">🔑 权限提升</span></div>
+        <div class="day-card"><h3>Day 12 · Windows 提权基础</h3><p>搭建Windows靶机，Potato家族提权演示</p><span class="tag">🪟 Windows</span></div>
+        <!-- 阶段五：后渗透 -->
+        <div class="day-card"><h3>Day 13 · 权限维持</h3><p>后门账户，计划任务，SSH密钥，meterpreter持久化</p><span class="tag">🕳️ 后门</span></div>
+        <div class="day-card"><h3>Day 14 · 内网信息收集</h3><p>本机信息收集，密码抓取，内网拓扑探测</p><span class="tag">🗺️ 横向移动</span></div>
+        <div class="day-card"><h3>Day 15 · 代理与隧道</h3><p>socks代理，frp/chisel搭建跳板，内网扫描</p><span class="tag">🚇 隧道</span></div>
+        <div class="day-card"><h3>Day 16 · 横向移动实战</h3><p>哈希传递，PsExec，WMI横向攻击</p><span class="tag">🔁 横向</span></div>
+        <!-- 阶段六：域渗透 -->
+        <div class="day-card"><h3>Day 17 · 域环境搭建</h3><p>搭建Windows域控，加入域成员，域基础概念</p><span class="tag">🏢 域</span></div>
+        <div class="day-card"><h3>Day 18 · Kerberoasting与AS-REP Roasting</h3><p>抓取服务票据，离线破解域用户密码</p><span class="tag">🎫 票据</span></div>
+        <div class="day-card"><h3>Day 19 · 黄金票据/白银票据</h3><p>伪造票据获取域管理员权限</p><span class="tag">👑 域控</span></div>
+        <!-- 阶段七：报告与高阶 -->
+        <div class="day-card"><h3>Day 20 · 渗透测试报告编写</h3><p>漏洞描述，复现步骤，修复建议，报告模板</p><span class="tag">📝 报告</span></div>
+        <div class="day-card"><h3>Day 21 · WAF绕过基础</h3><p>SQL注入绕过，编码混淆，FUZZ技巧</p><span class="tag">🛡️ 绕过</span></div>
+        <div class="day-card"><h3>Day 22 · 代码审计入门</h3><p>PHP常见漏洞审计，危险函数追踪</p><span class="tag">🔎 审计</span></div>
+        <div class="day-card"><h3>Day 23 · 二进制漏洞入门</h3><p>栈溢出基础，搭建环境，控制EIP</p><span class="tag">⚙️ 二进制</span></div>
+        <div class="day-card"><h3>Day 24 · 实战综合演练（一）</h3><p>模拟外网打点，信息收集+漏洞利用</p><span class="tag">🎯 综合</span></div>
+        <div class="day-card"><h3>Day 25 · 实战综合演练（二）</h3><p>提权+内网渗透</p><span class="tag">🎯 综合</span></div>
+        <div class="day-card"><h3>Day 26 · 实战综合演练（三）</h3><p>域渗透+报告编写</p><span class="tag">🎯 综合</span></div>
+        <div class="day-card"><h3>Day 27 · 移动安全或IoT初探</h3><p>Android基础渗透，ADB调试</p><span class="tag">📱 扩展</span></div>
+        <div class="day-card"><h3>Day 28 · 云安全基础</h3><p>OSS bucket泄露，IAM错误配置</p><span class="tag">☁️ 云</span></div>
+        <div class="day-card"><h3>Day 29 · 红队战术：免杀与C2</h3><p>简单免杀处理，Cobalt Strike基础</p><span class="tag">🎭 红队</span></div>
+        <div class="day-card"><h3>Day 30 · 总结与职业规划</h3><p>回顾知识树，证书推荐，持续学习路线</p><span class="tag">🚀 收官</span></div>
+    </div>
+
+    <h2>🧠 知识体系框架（问题驱动视角）</h2>
+    <div class="knowledge-tree">
+        <ul>
+            <li><strong>🌱 地基</strong>：网络协议（TCP/IP，HTTP），操作系统（Linux/Windows基础），编程（Python/Bash）</li>
+            <li><strong>🔍 信息收集</strong>：资产发现，端口扫描，目录枚举，OSINT</li>
+            <li><strong>🔓 漏洞利用</strong>：Web漏洞（SQLi，XSS，RCE），服务漏洞，Metasploit框架</li>
+            <li><strong>📈 权限提升</strong>：Linux/Windows提权方法论，内核exp，服务提权</li>
+            <li><strong>🌐 后渗透</strong>：隧道搭建，横向移动，域渗透，痕迹清理</li>
+            <li><strong>📋 输出与合规</strong>：渗透测试报告，漏洞评级，修复建议</li>
+            <li><strong>🚀 进阶方向</strong>：红队/蓝队，代码审计，逆向工程，云安全</li>
+        </ul>
+        <p>📌 每天的任务均围绕一个核心问题展开，通过动手解决问题深化理解。</p>
+    </div>
+
+    <hr>
+    <p style="text-align: center; font-size: 0.8rem; margin-top: 2rem;">📁 每日详细内容文件命名：day1.html ~ day30.html，与侧边栏完全对应。</p>
+</div>
+</body>
+</html>
