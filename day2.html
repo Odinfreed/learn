@@ -2,15 +2,14 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Day 2 · 信息收集（主动扫描） | 渗透测试学习</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 2 · 信息收集（主动扫描）| 6-8小时深度实战</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             background: #1e1e2f;
             color: #e0e0e0;
@@ -18,97 +17,158 @@
             padding: 2rem;
             line-height: 1.5;
         }
-
         .container {
-            max-width: 1000px;
+            max-width: 1300px;
             margin: 0 auto;
         }
-
         h1 {
             color: #4c9aff;
             border-left: 5px solid #4c9aff;
             padding-left: 1rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
-
-        h2 {
-            color: #bbd9ff;
-            border-left: 4px solid #4c9aff;
-            padding-left: 0.8rem;
-            margin: 1.5rem 0 1rem 0;
+        .subtitle {
+            color: #8a8aa5;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
         }
-
-        h3 {
-            color: #9eb3ff;
-            margin: 1rem 0 0.5rem;
-        }
-
-        .card {
+        /* 阶段卡片 */
+        .stage {
             background: #11111f;
             border-radius: 20px;
             padding: 1.5rem;
             margin-bottom: 2rem;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
-
-        .checklist {
-            list-style: none;
-            padding: 0;
+        .stage h2 {
+            color: #bbd9ff;
+            border-left: 4px solid #4c9aff;
+            padding-left: 0.8rem;
+            margin-bottom: 1rem;
         }
-
-        .checklist li {
-            margin: 0.8rem 0;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
+        .stage h3 {
+            color: #9eb3ff;
+            margin: 1rem 0 0.5rem 0;
         }
-
-        .checklist input[type="checkbox"] {
-            width: 1.2rem;
-            height: 1.2rem;
+        /* 命令块 */
+        .command-block {
+            background: #0a0a14;
+            border-radius: 12px;
+            margin: 1rem 0;
+            position: relative;
+        }
+        .command-block pre {
+            background: transparent;
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            margin: 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: #2a2a3a;
+            border: none;
+            color: #ddd;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
             cursor: pointer;
+            font-size: 0.7rem;
         }
-
-        .checklist label {
-            cursor: pointer;
-            flex: 1;
+        .copy-btn:hover {
+            background: #4c9aff;
+            color: #111;
         }
-
-        .question-box textarea {
+        /* 思考区域 */
+        .question-box {
+            background: #1a1a2a;
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .question-box p {
+            font-weight: bold;
+            color: #ffb86c;
+            margin-bottom: 0.5rem;
+        }
+        .answer-input {
             width: 100%;
             background: #0a0a14;
             border: 1px solid #2a2a3a;
             color: #e0e0e0;
-            padding: 0.8rem;
-            border-radius: 12px;
+            padding: 0.6rem;
+            border-radius: 8px;
             font-family: monospace;
             resize: vertical;
-            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
         }
-
+        .show-answer {
+            background: #2a2a5a;
+            border: none;
+            color: #bbd9ff;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .answer-text {
+            background: #0a0a2a;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            display: none;
+            white-space: pre-wrap;
+            color: #b0b0d0;
+        }
+        /* 截图区域 */
         .screenshot-area {
+            margin: 1rem 0;
+        }
+        .screenshot-input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: flex-start;
+        }
+        .screenshot-input {
+            flex: 1;
+            background: #0a0a14;
+            border: 1px solid #2a2a3a;
+            color: #e0e0e0;
+            padding: 0.6rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            resize: vertical;
+        }
+        .upload-btn, .add-from-text {
+            background: #2a2a3a;
+            border: none;
+            color: #ddd;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+        .screenshot-preview {
             display: flex;
             flex-wrap: wrap;
             gap: 1rem;
-            margin-top: 1rem;
+            margin-top: 0.5rem;
         }
-
-        .screenshot-item {
+        .preview-img {
             position: relative;
-            background: #0a0a14;
-            border-radius: 12px;
-            padding: 0.5rem;
-            border: 1px solid #2a2a3a;
             max-width: 200px;
-        }
-
-        .screenshot-item img {
-            max-width: 100%;
+            background: #0a0a14;
             border-radius: 8px;
-            display: block;
+            padding: 0.2rem;
         }
-
-        .delete-screenshot {
+        .preview-img img {
+            max-width: 100%;
+            border-radius: 6px;
+        }
+        .del-img {
             position: absolute;
             top: -8px;
             right: -8px;
@@ -116,381 +176,567 @@
             color: white;
             border: none;
             border-radius: 50%;
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
             line-height: 1;
         }
-
-        .add-screenshot {
-            background: #2a2a3a;
-            border: 1px dashed #6c6c8c;
-            border-radius: 12px;
-            padding: 0.8rem;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.2s;
-            width: 120px;
+        /* 工具栏 */
+        .toolbar {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
         }
-
-        .add-screenshot:hover {
-            background: #3a3a5a;
+        .toolbar button {
+            background: #2a2a3a;
+            border: none;
+            color: #ddd;
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: monospace;
         }
-
-        code, pre {
-            background: #0a0a14;
-            padding: 0.2rem 0.4rem;
-            border-radius: 6px;
-            font-family: 'Fira Code', monospace;
+        .toolbar button.primary {
+            background: #4c9aff;
+            color: #111;
+            font-weight: bold;
         }
-
-        pre {
-            padding: 1rem;
-            overflow-x: auto;
-            margin: 0.5rem 0;
+        .progress-badge {
+            background: #2a6e3a;
+            color: #b0ffb0;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-left: 1rem;
         }
-
+        a {
+            color: #6cb4ff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        hr {
+            border-color: #2a2a3a;
+            margin: 2rem 0;
+        }
         .tip {
             background: #2a2a5a;
             padding: 12px;
             border-radius: 10px;
             margin: 20px 0;
         }
-
-        hr {
-            border-color: #2a2a3a;
+        .checklist {
+            list-style: none;
+            margin-top: 1rem;
         }
-
-        .toolbar {
-            margin-bottom: 1.5rem;
-            display: flex;
-            gap: 1rem;
+        .checklist li {
+            margin: 0.5rem 0;
         }
-
-        .toolbar button {
-            background: #2a2a3a;
-            border: none;
-            color: #ddd;
-            padding: 6px 14px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-family: monospace;
-            transition: 0.2s;
-        }
-
-        .toolbar button.primary {
-            background: #4c9aff;
-            color: #111;
-            font-weight: bold;
-        }
-
-        .toolbar button:hover {
-            background: #3a3a5a;
+        .checklist input {
+            margin-right: 0.8rem;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>📡 Day 2 · 信息收集（主动扫描）</h1>
-    <p><strong>核心问题</strong>：在发动攻击前，如何尽可能多地了解目标？</p>
-
     <div class="toolbar">
-        <button id="reset-today">🔄 重置今日进度</button>
+        <button id="reset-progress">🔄 重置今日进度</button>
         <button id="export-page" class="primary">📤 导出为静态网页</button>
+        <span class="progress-badge" id="progress-badge">进度: 0%</span>
     </div>
 
-    <div class="card">
-        <h2>🎯 今日目标</h2>
+    <h1>🔍 Day 2 · 信息收集（主动扫描）</h1>
+    <div class="subtitle">预计耗时：6-8小时 | 核心问题：在发动攻击前，如何尽可能多地了解目标？</div>
+
+    <!-- 阶段1：Nmap 基础回顾与高级选项 -->
+    <div class="stage" id="stage1">
+        <h2>阶段一：Nmap 高级扫描技术（预计1.5小时）</h2>
+        <p>复习 Day 1 的扫描，深入学习 Nmap 高级参数，包括全端口扫描、服务版本深度探测、操作系统识别。</p>
+        <h3>📌 任务</h3>
         <ul>
-            <li>学习Nmap高级选项（-sS, -sV, -O, -p-）</li>
-            <li>识别操作系统与服务版本</li>
-            <li>编写资产报告（开放端口、服务版本、OS信息）</li>
+            <li>对 Metasploitable 2 执行全端口扫描</li>
+            <li>使用 <code>-sV --version-intensity 9</code> 深度探测服务版本</li>
+            <li>使用 <code>-O --osscan-guess</code> 精准识别操作系统</li>
+            <li>对比不同扫描类型（-sS, -sT, -sU）的差异</li>
         </ul>
-    </div>
+        <div class="command-block">
+            <pre><code># 全端口扫描（65535个端口，速度适中）
+nmap -p- -T4 靶机IP
 
-    <div class="card">
-        <h2>⚙️ 实战步骤</h2>
-        <h3>1. Nmap高级扫描</h3>
-        <p>使用以下命令对 Metasploitable 2 进行全端口扫描，并探测服务版本和操作系统：</p>
-        <pre><code>nmap -sS -sV -O -p- 192.168.x.x</code></pre>
-        <p><code>-sS</code> 半开扫描，<code>-sV</code> 服务版本，<code>-O</code> 操作系统识别，<code>-p-</code> 扫描全部65535端口。</p>
+# 服务版本深度探测
+nmap -sV --version-intensity 9 靶机IP
 
-        <h3>2. 服务枚举</h3>
-        <p>使用脚本获取更详细的服务信息：</p>
-        <pre><code>nmap --script=banner 192.168.x.x</code></pre>
+# 操作系统精准识别
+nmap -O --osscan-guess 靶机IP
 
-        <h3>3. 编写资产报告</h3>
-        <p>记录开放端口、对应的服务版本、操作系统信息，形成资产清单。</p>
-        <div class="tip">
-            💡 提示：重点关注版本号较旧的服务，例如 vsftpd 2.3.4、OpenSSH 4.7p1 等，这些往往是突破口。
+# 组合命令（SYN扫描+版本+OS+全端口，耗时较长）
+nmap -sS -sV -O -p- --osscan-guess 靶机IP</code></pre>
+            <button class="copy-btn" data-cmd="nmap -p- -T4 靶机IP">📋 复制</button>
         </div>
-    </div>
-
-    <div class="card">
-        <h2>✅ 验收清单</h2>
-        <ul class="checklist" id="checklist-container">
-            <li><input type="checkbox" id="check_0"><label for="check_0">完成一次全端口扫描（-p-）</label></li>
-            <li><input type="checkbox" id="check_1"><label for="check_1">获得服务版本列表（-sV）</label></li>
-            <li><input type="checkbox" id="check_2"><label for="check_2">成功识别操作系统（-O）</label></li>
-            <li><input type="checkbox" id="check_3"><label for="check_3">编写资产报告（Markdown或文本）</label></li>
-        </ul>
-    </div>
-
-    <div class="card">
-        <h2>📝 问题记录</h2>
         <div class="question-box">
-            <textarea id="question-text" rows="4" placeholder="记录今天遇到的问题、解决思路、重要知识点..."></textarea>
+            <p>💡 思考问题1：SYN扫描（-sS）和TCP全连接扫描（-sT）有什么区别？为什么SYN扫描更隐蔽？</p>
+            <textarea class="answer-input" placeholder="写下你的思考..."></textarea>
+            <button class="show-answer">📖 显示参考答案</button>
+            <div class="answer-text">
+                <strong>参考答案：</strong><br>
+                SYN扫描只发送SYN包，若收到SYN/ACK则回复RST断开，不建立完整连接，因此不会在目标系统留下连接日志，更隐蔽。<br>
+                TCP全连接扫描会完成三次握手，建立完整连接，容易被日志记录。SYN扫描速度更快，但需要root权限。
+            </div>
+        </div>
+        <div class="screenshot-area">
+            <div class="screenshot-input-group">
+                <textarea class="screenshot-input" placeholder="粘贴截图（base64）或图片URL..."></textarea>
+                <button class="upload-btn">📷 上传图片</button>
+                <input type="file" accept="image/*" style="display:none;">
+                <button class="add-from-text">📥 从文本域添加</button>
+            </div>
+            <div class="screenshot-preview"></div>
         </div>
     </div>
 
-    <div class="card">
-        <h2>📸 截图记录</h2>
-        <div id="screenshot-area" class="screenshot-area"></div>
-        <div class="add-screenshot" id="add-screenshot-btn">
-            📷 上传截图<br>
-            <span style="font-size:0.7rem;">点击或粘贴</span>
+    <!-- 阶段2：Nmap 脚本引擎（NSE）实战 -->
+    <div class="stage" id="stage2">
+        <h2>阶段二：Nmap 脚本引擎（NSE）实战（预计2小时）</h2>
+        <p>NSE 是 Nmap 最强大的功能，包含数百个安全检测脚本。学习使用默认脚本、分类脚本以及针对特定服务的脚本。</p>
+        <h3>📌 任务</h3>
+        <ul>
+            <li>使用默认安全脚本 <code>-sC</code> 扫描</li>
+            <li>使用 SMB 相关脚本检测漏洞（如永恒之蓝）</li>
+            <li>使用 HTTP 相关脚本枚举 Web 目录、标题、服务器信息</li>
+            <li>尝试暴力破解（谨慎，仅限实验室）</li>
+        </ul>
+        <div class="command-block">
+            <pre><code># 默认安全脚本扫描
+nmap -sC 靶机IP
+
+# SMB 操作系统探测
+nmap --script smb-os-discovery 靶机IP
+
+# SMB 漏洞检测（包括 MS17-010）
+nmap --script smb-vuln* 靶机IP
+
+# HTTP 信息收集
+nmap --script http-title,http-headers,http-enum 靶机IP
+
+# FTP 匿名登录检测
+nmap --script ftp-anon 靶机IP
+
+# SSH 弱口令爆破（仅限实验室！）
+nmap --script ssh-brute --script-args userdb=users.txt,passdb=pass.txt 靶机IP</code></pre>
+            <button class="copy-btn" data-cmd="nmap --script smb-vuln* 靶机IP">📋 复制</button>
         </div>
-        <input type="file" id="screenshot-file-input" accept="image/*" multiple style="display:none">
+        <div class="tip">
+            💡 注意：暴力破解脚本可能触发目标系统的防御机制，仅在授权的实验室环境中使用。
+        </div>
+        <div class="question-box">
+            <p>💡 思考问题2：NSE 脚本的工作原理是什么？为什么某些脚本需要用户提供字典？</p>
+            <textarea class="answer-input" placeholder="写下你的思考..."></textarea>
+            <button class="show-answer">📖 显示参考答案</button>
+            <div class="answer-text">
+                <strong>参考答案：</strong><br>
+                NSE 脚本使用 Lua 语言编写，通过发送特定数据包并分析响应来检测漏洞或收集信息。暴力破解类脚本需要字典是因为它们通过尝试大量用户名/密码组合来验证弱口令，字典质量直接影响成功率。
+            </div>
+        </div>
+        <div class="screenshot-area">
+            <div class="screenshot-input-group">
+                <textarea class="screenshot-input" placeholder="粘贴截图..."></textarea>
+                <button class="upload-btn">📷 上传图片</button>
+                <input type="file" accept="image/*" style="display:none;">
+                <button class="add-from-text">📥 从文本域添加</button>
+            </div>
+            <div class="screenshot-preview"></div>
+        </div>
+    </div>
+
+    <!-- 阶段3：扫描结果分析与资产报告 -->
+    <div class="stage" id="stage3">
+        <h2>阶段三：扫描结果分析与资产报告（预计1.5小时）</h2>
+        <p>将扫描结果整理成结构化报告，提取关键信息，为后续漏洞利用做准备。</p>
+        <h3>📌 任务</h3>
+        <ul>
+            <li>将扫描结果保存为多种格式（普通、grepable、XML）</li>
+            <li>使用 grep、awk 等工具提取开放端口列表</li>
+            <li>撰写资产报告，包含 IP、端口、服务版本、潜在风险</li>
+        </ul>
+        <div class="command-block">
+            <pre><code># 保存扫描结果为所有格式
+nmap -sV -O -oA full_scan 靶机IP
+
+# 从 grepable 文件中提取开放端口
+grep "open" full_scan.gnmap | awk '{print $2,$3,$4,$5}' > open_ports.txt
+
+# 使用 xsltproc 将 XML 转为 HTML 报告
+xsltproc full_scan.xml -o report.html</code></pre>
+            <button class="copy-btn" data-cmd="xsltproc full_scan.xml -o report.html">📋 复制</button>
+        </div>
+        <div class="question-box">
+            <p>💡 思考问题3：为什么资产报告需要包含服务版本信息？这对后续漏洞利用有何帮助？</p>
+            <textarea class="answer-input" placeholder="写下你的思考..."></textarea>
+            <button class="show-answer">📖 显示参考答案</button>
+            <div class="answer-text">
+                <strong>参考答案：</strong><br>
+                服务版本信息可以快速匹配已知漏洞（如 vsftpd 2.3.4 对应后门漏洞）。精确的版本号使漏洞利用更加精准，避免浪费时间尝试不适配的 exploit。
+            </div>
+        </div>
+        <div class="screenshot-area">
+            <div class="screenshot-input-group">
+                <textarea class="screenshot-input" placeholder="粘贴截图..."></textarea>
+                <button class="upload-btn">📷 上传图片</button>
+                <input type="file" accept="image/*" style="display:none;">
+                <button class="add-from-text">📥 从文本域添加</button>
+            </div>
+            <div class="screenshot-preview"></div>
+        </div>
+    </div>
+
+    <!-- 阶段4：补充工具实战 -->
+    <div class="stage" id="stage4">
+        <h2>阶段四：补充工具实战（预计1小时）</h2>
+        <p>学习其他信息收集工具，拓宽视野，包括 masscan、nc、whatweb。</p>
+        <h3>📌 任务</h3>
+        <ul>
+            <li>使用 masscan 快速扫描常用端口</li>
+            <li>使用 netcat 手动抓取 banner</li>
+            <li>使用 whatweb 识别 Web 技术栈</li>
+        </ul>
+        <div class="command-block">
+            <pre><code># 安装 masscan
+sudo apt install masscan -y
+
+# 快速扫描1000个常用端口
+masscan -p1-1000 --rate=1000 靶机IP
+
+# 使用 netcat 抓取 FTP banner
+nc -nv 靶机IP 21
+
+# 使用 whatweb 识别 Web 技术
+whatweb http://靶机IP</code></pre>
+            <button class="copy-btn" data-cmd="masscan -p1-1000 --rate=1000 靶机IP">📋 复制</button>
+        </div>
+        <div class="question-box">
+            <p>💡 思考问题4：masscan 与 nmap 相比有何优势？在什么场景下更适合使用 masscan？</p>
+            <textarea class="answer-input" placeholder="写下你的思考..."></textarea>
+            <button class="show-answer">📖 显示参考答案</button>
+            <div class="answer-text">
+                <strong>参考答案：</strong><br>
+                masscan 以极高速率扫描（每秒数万包），适合大规模网络或快速探测开放端口。但缺乏深度服务识别，通常先用 masscan 发现开放端口，再用 nmap 进行详细扫描。
+            </div>
+        </div>
+        <div class="screenshot-area">
+            <div class="screenshot-input-group">
+                <textarea class="screenshot-input" placeholder="粘贴截图..."></textarea>
+                <button class="upload-btn">📷 上传图片</button>
+                <input type="file" accept="image/*" style="display:none;">
+                <button class="add-from-text">📥 从文本域添加</button>
+            </div>
+            <div class="screenshot-preview"></div>
+        </div>
+    </div>
+
+    <!-- 阶段5：被动信息收集引子 -->
+    <div class="stage" id="stage5">
+        <h2>阶段五：被动信息收集引子（预计30分钟）</h2>
+        <p>主动扫描会留下痕迹，被动信息收集则利用公开资源获取目标信息。为明天做准备，学习基本概念。</p>
+        <h3>📌 任务</h3>
+        <ul>
+            <li>了解 OSINT（开源情报）概念</li>
+            <li>尝试使用 <a href="https://www.shodan.io/" target="_blank">Shodan</a> 搜索物联网设备</li>
+            <li>使用 <a href="https://github.com/lanmaster53/recon-ng" target="_blank">Recon-ng</a> 框架（可选）</li>
+        </ul>
+        <div class="question-box">
+            <p>💡 思考问题5：被动信息收集与主动扫描的主要区别是什么？各有哪些优缺点？</p>
+            <textarea class="answer-input" placeholder="写下你的思考..."></textarea>
+            <button class="show-answer">📖 显示参考答案</button>
+            <div class="answer-text">
+                <strong>参考答案：</strong><br>
+                主动扫描直接与目标交互，会留下日志，但信息精确；被动收集不接触目标，通过搜索引擎、历史数据等获取信息，隐蔽但可能不完整。通常两者结合使用。
+            </div>
+        </div>
+        <div class="screenshot-area">
+            <div class="screenshot-input-group">
+                <textarea class="screenshot-input" placeholder="粘贴截图..."></textarea>
+                <button class="upload-btn">📷 上传图片</button>
+                <input type="file" accept="image/*" style="display:none;">
+                <button class="add-from-text">📥 从文本域添加</button>
+            </div>
+            <div class="screenshot-preview"></div>
+        </div>
+    </div>
+
+    <!-- 最终验收清单 -->
+    <div class="stage">
+        <h2>✅ 今日验收清单</h2>
+        <ul class="checklist" id="checklist-container">
+            <li><input type="checkbox" id="check0"> 能独立使用 nmap 执行全端口扫描并分析结果</li>
+            <li><input type="checkbox" id="check1"> 成功使用至少 5 个不同的 NSE 脚本，并理解其作用</li>
+            <li><input type="checkbox" id="check2"> 准确识别出 Metasploitable 2 上的高危服务（vsftpd, Samba, MySQL）</li>
+            <li><input type="checkbox" id="check3"> 能区分 SYN 扫描和 TCP 全连接扫描的差异</li>
+            <li><input type="checkbox" id="check4"> 编写了一份完整的资产报告（包含 IP、端口、服务、建议）</li>
+            <li><input type="checkbox" id="check5"> 使用 masscan 或 nc 进行了补充扫描/抓取</li>
+            <li><input type="checkbox" id="check6"> 理解了信息收集在渗透测试中的重要性，并能列出至少 3 种被动信息收集方法</li>
+        </ul>
     </div>
 
     <hr>
-    <p>📌 明天预告：Day 3 · 被动信息收集 — 如何从公开渠道挖掘目标情报？</p>
-    <p>🔗 <a href="total_schedule.html" target="_blank">查看总日程规划</a> | <a href="index.html">返回主界面</a></p>
+    <p>📌 明天预告：Day 3 · 被动信息收集 —— 利用 OSINT 从公开渠道挖掘目标信息。</p>
 </div>
 
 <script>
-    // 当前天数（0-based，Day2 对应索引 1）
-    const DAY_INDEX = 1;
-    // 存储键名
-    const STORAGE_KEY = `pentest_day_${DAY_INDEX}`;
+    // ==================== 数据存储 ====================
+    const STORAGE_KEY = 'day2_progress_v2';
+    let progress = {
+        checklist: [],
+        stages: []  // 每个阶段存储 { answers: [], screenshots: [] }
+    };
 
-    // 初始化或加载已保存的数据
-    let savedData = null;
-
-    function loadSavedData() {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) {
-            savedData = JSON.parse(raw);
-        } else {
-            savedData = null;
+    // 初始化阶段结构
+    const stages = document.querySelectorAll('.stage');
+    for (let i = 0; i < stages.length; i++) {
+        if (!progress.stages[i]) {
+            progress.stages[i] = { answers: [], screenshots: [] };
+        }
+        const stageDiv = stages[i];
+        const answerAreas = stageDiv.querySelectorAll('.answer-input');
+        const screenshotGroups = stageDiv.querySelectorAll('.screenshot-input-group');
+        if (progress.stages[i].answers.length < answerAreas.length) {
+            progress.stages[i].answers = new Array(answerAreas.length).fill('');
+        }
+        if (progress.stages[i].screenshots.length < screenshotGroups.length) {
+            progress.stages[i].screenshots = new Array(screenshotGroups.length).fill([]);
         }
     }
 
-    function saveCurrentData() {
-        const checkboxes = document.querySelectorAll('#checklist-container input[type="checkbox"]');
-        const checklistState = Array.from(checkboxes).map(cb => cb.checked);
-        const questionText = document.getElementById('question-text').value;
-        const screenshotArea = document.getElementById('screenshot-area');
-        const screenshots = [];
-        const imgs = screenshotArea.querySelectorAll('.screenshot-item img');
-        imgs.forEach(img => screenshots.push(img.src));
-
-        const dataToSave = {
-            checklistState,
-            questionText,
-            screenshots,
-            lastUpdated: new Date().toISOString()
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+    // 加载进度
+    function loadProgress() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            const loaded = JSON.parse(saved);
+            progress = loaded;
+            // 恢复复选框
+            const checkboxes = document.querySelectorAll('#checklist-container input');
+            checkboxes.forEach((cb, idx) => {
+                if (progress.checklist[idx] !== undefined) cb.checked = progress.checklist[idx];
+            });
+            // 恢复思考和截图
+            stages.forEach((stage, stageIdx) => {
+                const answers = stage.querySelectorAll('.answer-input');
+                answers.forEach((ans, ansIdx) => {
+                    if (progress.stages[stageIdx] && progress.stages[stageIdx].answers[ansIdx]) {
+                        ans.value = progress.stages[stageIdx].answers[ansIdx];
+                    }
+                });
+                const screenshotGroups = stage.querySelectorAll('.screenshot-input-group');
+                screenshotGroups.forEach((group, groupIdx) => {
+                    const previewDiv = group.parentElement?.querySelector('.screenshot-preview') || group.nextElementSibling;
+                    if (previewDiv && previewDiv.classList.contains('screenshot-preview')) {
+                        const screenshots = progress.stages[stageIdx]?.screenshots[groupIdx] || [];
+                        screenshots.forEach(src => addPreviewImage(src, previewDiv, stageIdx, groupIdx, false));
+                    }
+                });
+            });
+        }
+        updateProgressBadge();
     }
 
-    function restoreSavedData() {
-        if (!savedData) return;
-
-        // 恢复复选框
-        const checkboxes = document.querySelectorAll('#checklist-container input[type="checkbox"]');
-        if (savedData.checklistState) {
-            checkboxes.forEach((cb, idx) => {
-                if (savedData.checklistState[idx] !== undefined) {
-                    cb.checked = savedData.checklistState[idx];
+    function saveProgress() {
+        // 保存复选框
+        const checkboxes = document.querySelectorAll('#checklist-container input');
+        progress.checklist = Array.from(checkboxes).map(cb => cb.checked);
+        // 保存思考答案
+        stages.forEach((stage, stageIdx) => {
+            const answers = stage.querySelectorAll('.answer-input');
+            answers.forEach((ans, ansIdx) => {
+                if (!progress.stages[stageIdx]) progress.stages[stageIdx] = { answers: [], screenshots: [] };
+                progress.stages[stageIdx].answers[ansIdx] = ans.value;
+            });
+            // 截图已经实时保存，这里再同步一次（确保）
+            const screenshotGroups = stage.querySelectorAll('.screenshot-input-group');
+            screenshotGroups.forEach((group, groupIdx) => {
+                let previewDiv = group.parentElement?.querySelector('.screenshot-preview');
+                if (!previewDiv) previewDiv = group.nextElementSibling;
+                if (previewDiv && previewDiv.classList.contains('screenshot-preview')) {
+                    const imgs = previewDiv.querySelectorAll('img');
+                    const srcs = Array.from(imgs).map(img => img.src);
+                    if (!progress.stages[stageIdx]) progress.stages[stageIdx] = { answers: [], screenshots: [] };
+                    progress.stages[stageIdx].screenshots[groupIdx] = srcs;
                 }
             });
-        }
-
-        // 恢复问题文本
-        if (savedData.questionText) {
-            document.getElementById('question-text').value = savedData.questionText;
-        }
-
-        // 恢复截图
-        if (savedData.screenshots && savedData.screenshots.length) {
-            const area = document.getElementById('screenshot-area');
-            savedData.screenshots.forEach(src => {
-                addScreenshotElement(src, area);
-            });
-        }
+        });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+        updateProgressBadge();
     }
 
-    function addScreenshotElement(src, container) {
+    function updateProgressBadge() {
+        const total = progress.checklist.length;
+        const completed = progress.checklist.filter(v => v === true).length;
+        const percent = total ? Math.round((completed / total) * 100) : 0;
+        const badge = document.getElementById('progress-badge');
+        if (badge) badge.innerText = `进度: ${percent}%`;
+    }
+
+    // 辅助函数：添加预览图片
+    function addPreviewImage(src, container, stageIdx, groupIdx, autoSave = true) {
         const div = document.createElement('div');
-        div.className = 'screenshot-item';
-        div.innerHTML = `
-            <img src="${src}" alt="screenshot">
-            <button class="delete-screenshot" title="删除">✖</button>
-        `;
-        const delBtn = div.querySelector('.delete-screenshot');
+        div.className = 'preview-img';
+        div.innerHTML = `<img src="${src}" style="max-width:200px;"><button class="del-img">✖</button>`;
+        const delBtn = div.querySelector('.del-img');
         delBtn.addEventListener('click', () => {
             div.remove();
-            saveCurrentData();
+            if (autoSave) {
+                // 更新存储
+                const imgs = container.querySelectorAll('img');
+                const srcs = Array.from(imgs).map(img => img.src);
+                if (!progress.stages[stageIdx]) progress.stages[stageIdx] = { answers: [], screenshots: [] };
+                progress.stages[stageIdx].screenshots[groupIdx] = srcs;
+                saveProgress();
+            }
         });
         container.appendChild(div);
+        if (autoSave) {
+            const imgs = container.querySelectorAll('img');
+            const srcs = Array.from(imgs).map(img => img.src);
+            if (!progress.stages[stageIdx]) progress.stages[stageIdx] = { answers: [], screenshots: [] };
+            progress.stages[stageIdx].screenshots[groupIdx] = srcs;
+            saveProgress();
+        }
     }
 
-    function bindCheckboxEvents() {
-        const checkboxes = document.querySelectorAll('#checklist-container input');
-        checkboxes.forEach(cb => {
-            cb.addEventListener('change', () => saveCurrentData());
-        });
-    }
+    // 初始化所有截图上传
+    function initScreenshotHandlers() {
+        const screenshotGroups = document.querySelectorAll('.screenshot-input-group');
+        screenshotGroups.forEach((group, groupIdx) => {
+            const textarea = group.querySelector('.screenshot-input');
+            const uploadBtn = group.querySelector('.upload-btn');
+            const fileInput = group.querySelector('input[type="file"]');
+            const addFromTextBtn = group.querySelector('.add-from-text');
+            // 获取预览容器（可能在 group 的父级内，或下一个兄弟）
+            let previewDiv = group.parentElement?.querySelector('.screenshot-preview');
+            if (!previewDiv) previewDiv = group.nextElementSibling;
+            if (!previewDiv || !previewDiv.classList.contains('screenshot-preview')) return;
 
-    function bindQuestionEvents() {
-        const textarea = document.getElementById('question-text');
-        textarea.addEventListener('input', () => saveCurrentData());
-    }
+            // 获取 stage 索引
+            const stage = group.closest('.stage');
+            const stageIdx = Array.from(stages).indexOf(stage);
 
-    function bindScreenshotEvents() {
-        const addBtn = document.getElementById('add-screenshot-btn');
-        const fileInput = document.getElementById('screenshot-file-input');
-        const area = document.getElementById('screenshot-area');
-
-        addBtn.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', (e) => {
-            const files = Array.from(e.target.files);
-            files.forEach(file => {
-                if (file.type.startsWith('image/')) {
+            // 上传按钮
+            uploadBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file && file.type.startsWith('image/')) {
                     const reader = new FileReader();
                     reader.onload = (ev) => {
-                        addScreenshotElement(ev.target.result, area);
-                        saveCurrentData();
+                        const src = ev.target.result;
+                        addPreviewImage(src, previewDiv, stageIdx, groupIdx);
+                        textarea.value = src;
                     };
                     reader.readAsDataURL(file);
                 }
+                fileInput.value = '';
             });
-            fileInput.value = '';
-        });
-
-        document.addEventListener('paste', (e) => {
-            const items = e.clipboardData.items;
-            for (let item of items) {
-                if (item.type.indexOf('image') !== -1) {
-                    const blob = item.getAsFile();
-                    const reader = new FileReader();
-                    reader.onload = (ev) => {
-                        addScreenshotElement(ev.target.result, area);
-                        saveCurrentData();
-                    };
-                    reader.readAsDataURL(blob);
-                    break;
+            // 粘贴事件监听（在 textarea 上）
+            textarea.addEventListener('paste', (e) => {
+                const items = e.clipboardData.items;
+                for (let item of items) {
+                    if (item.type.indexOf('image') !== -1) {
+                        const blob = item.getAsFile();
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                            const src = ev.target.result;
+                            addPreviewImage(src, previewDiv, stageIdx, groupIdx);
+                            textarea.value = src;
+                        };
+                        reader.readAsDataURL(blob);
+                        break;
+                    }
                 }
+            });
+            // 从文本域添加
+            if (addFromTextBtn) {
+                addFromTextBtn.addEventListener('click', () => {
+                    const val = textarea.value.trim();
+                    if (val.startsWith('data:image') || val.startsWith('http')) {
+                        addPreviewImage(val, previewDiv, stageIdx, groupIdx);
+                    } else {
+                        alert('请输入有效的图片 base64 或 URL');
+                    }
+                });
             }
         });
     }
 
-    function resetToday() {
-        if (confirm('确定重置今天的全部进度吗？(复选框、笔记、截图将被清空)')) {
+    // 一键复制
+    function initCopyButtons() {
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const cmd = btn.getAttribute('data-cmd');
+                navigator.clipboard.writeText(cmd).then(() => {
+                    btn.textContent = '✓ 已复制';
+                    setTimeout(() => btn.textContent = '📋 复制', 1500);
+                });
+            });
+        });
+    }
+
+    // 显示/隐藏答案
+    function initAnswerToggles() {
+        document.querySelectorAll('.show-answer').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const answerDiv = btn.nextElementSibling;
+                if (answerDiv && answerDiv.classList.contains('answer-text')) {
+                    answerDiv.style.display = answerDiv.style.display === 'block' ? 'none' : 'block';
+                }
+            });
+        });
+    }
+
+    // 自动保存思考输入
+    function bindAutoSave() {
+        document.querySelectorAll('.answer-input, .screenshot-input').forEach(el => {
+            el.addEventListener('input', saveProgress);
+        });
+        document.querySelectorAll('#checklist-container input').forEach(cb => {
+            cb.addEventListener('change', saveProgress);
+        });
+    }
+
+    // 重置进度
+    function resetProgress() {
+        if (confirm('确定重置今日所有进度？所有思考、截图、勾选将被清空。')) {
             localStorage.removeItem(STORAGE_KEY);
-            // 清空界面
-            const checkboxes = document.querySelectorAll('#checklist-container input');
-            checkboxes.forEach(cb => cb.checked = false);
-            document.getElementById('question-text').value = '';
-            const screenshotArea = document.getElementById('screenshot-area');
-            screenshotArea.innerHTML = '';
-            // 重新加载数据（此时无数据，但保留空白状态）
-            savedData = null;
+            location.reload();
         }
     }
 
-    function exportAsStatic() {
-        const checkboxes = document.querySelectorAll('#checklist-container input');
-        const checklistState = Array.from(checkboxes).map(cb => cb.checked);
-        const questionText = document.getElementById('question-text').value;
-        const screenshots = [];
-        const imgs = document.querySelectorAll('#screenshot-area .screenshot-item img');
-        imgs.forEach(img => screenshots.push(img.src));
-
-        const dayTitle = "Day 2 · 信息收集（主动扫描）";
-        const goals = ["学习Nmap高级选项", "识别操作系统与服务版本", "编写资产报告"];
-        const stepsHtml = document.querySelector('.card:nth-child(3)').innerHTML;
-        const checklistItems = ["完成一次全端口扫描", "获得服务版本列表", "成功识别操作系统", "编写资产报告"];
-
-        const exportHtml = `<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>渗透学习快照 - ${dayTitle}</title>
-    <style>
-        body { background: #1e1e2f; color: #e0e0e0; font-family: monospace; padding: 2rem; line-height: 1.5; }
-        .card { background: #11111f; border-radius: 20px; padding: 1.5rem; margin-bottom: 2rem; }
-        h1 { color: #4c9aff; }
-        h2 { color: #bbd9ff; border-left: 4px solid #4c9aff; padding-left: 0.8rem; }
-        .checklist li { margin: 0.5rem 0; list-style: none; }
-        .checklist li.completed { text-decoration: line-through; color: #8a8aa5; }
-        .screenshot-area { display: flex; flex-wrap: wrap; gap: 1rem; }
-        .screenshot-item img { max-width: 200px; border-radius: 8px; }
-        hr { border-color: #2a2a3a; }
-        pre { background: #0a0a14; padding: 1rem; overflow-x: auto; }
-    </style>
-</head>
-<body>
-    <div class="container" style="max-width:1200px;margin:0 auto">
-        <h1>📡 渗透学习快照 · ${dayTitle}</h1>
-        <p><strong>导出时间：</strong> ${new Date().toLocaleString()}</p>
-        <div class="card">
-            <h2>🎯 今日目标</h2>
-            <ul>${goals.map(g => `<li>${g}</li>`).join('')}</ul>
-        </div>
-        <div class="card">
-            <h2>⚙️ 实战步骤</h2>
-            ${stepsHtml}
-        </div>
-        <div class="card">
-            <h2>✅ 验收清单</h2>
-            <ul class="checklist">
-                ${checklistItems.map((item, idx) => `<li class="${checklistState[idx] ? 'completed' : ''}">${checklistState[idx] ? '✔️ ' : '☐ '}${item}</li>`).join('')}
-            </ul>
-        </div>
-        <div class="card">
-            <h2>📝 问题记录</h2>
-            <p style="white-space: pre-wrap;">${questionText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
-        </div>
-        <div class="card">
-            <h2>📸 截图记录</h2>
-            <div class="screenshot-area">
-                ${screenshots.map(src => `<div class="screenshot-item"><img src="${src}" alt="screenshot"></div>`).join('')}
-            </div>
-        </div>
-        <hr>
-        <p style="text-align:center">本文件为渗透学习系统导出，包含当时的学习进度和记录。</p>
-    </div>
-</body>
-</html>`;
-
-        const blob = new Blob([exportHtml], {type: 'text/html'});
+    // 导出为静态网页
+    function exportPage() {
+        const content = document.querySelector('.container').cloneNode(true);
+        // 移除按钮事件（避免导出后交互失效）
+        content.querySelectorAll('.copy-btn, .show-answer, .upload-btn, .add-from-text, .del-img').forEach(el => el.remove());
+        const html = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>渗透学习快照 - Day2</title><style>${document.querySelector('style').innerHTML}</style></head><body>${content.outerHTML}</body></html>`;
+        const blob = new Blob([html], {type: 'text/html'});
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
         link.href = url;
-        link.download = `pentest_day2_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.html`;
+        link.download = `pentest_day2_${new Date().toISOString().slice(0,10)}.html`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
     }
 
-    // 初始化
-    loadSavedData();
-    restoreSavedData();
-    bindCheckboxEvents();
-    bindQuestionEvents();
-    bindScreenshotEvents();
+    document.getElementById('reset-progress').addEventListener('click', resetProgress);
+    document.getElementById('export-page').addEventListener('click', exportPage);
 
-    document.getElementById('reset-today').addEventListener('click', resetToday);
-    document.getElementById('export-page').addEventListener('click', exportAsStatic);
+    loadProgress();
+    initScreenshotHandlers();
+    initCopyButtons();
+    initAnswerToggles();
+    bindAutoSave();
 </script>
 </body>
 </html>
