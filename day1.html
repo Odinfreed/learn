@@ -3,35 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Day 1 · 环境搭建 | 渗透测试学习</title>
+    <title>Day 1 · 渗透测试环境搭建 </title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            background: #1e1e2e;
-            color: #e2e2e9;
+            background: #1e1e2f;
+            color: #e0e0e0;
             font-family: 'Segoe UI', 'Fira Code', monospace;
             padding: 2rem;
             line-height: 1.5;
         }
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
         }
-        h1, h2, h3 {
-            color: #bbd9ff;
+        h1 {
+            color: #4c9aff;
+            border-left: 5px solid #4c9aff;
+            padding-left: 1rem;
+            margin-bottom: 0.5rem;
         }
-        code {
-            background: #2a2a3a;
-            padding: 2px 6px;
-            border-radius: 6px;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.9em;
-        }
-        pre {
-            background: #0f0f1a;
-            padding: 12px;
-            border-radius: 12px;
-            overflow-x: auto;
-            border-left: 4px solid #4c9aff;
+        .subtitle {
+            color: #8a8aa5;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
         }
         .card {
             background: #11111f;
@@ -39,6 +38,16 @@
             padding: 1.5rem;
             margin-bottom: 2rem;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .card h2 {
+            color: #bbd9ff;
+            border-left: 4px solid #4c9aff;
+            padding-left: 0.8rem;
+            margin-bottom: 1rem;
+        }
+        .card h3 {
+            color: #9eb3ff;
+            margin: 1rem 0 0.5rem 0;
         }
         .checklist {
             list-style: none;
@@ -120,6 +129,17 @@
         .add-screenshot:hover {
             background: #3a3a5a;
         }
+        code, pre {
+            background: #0a0a14;
+            padding: 0.2rem 0.4rem;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+        }
+        pre {
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 0.5rem 0;
+        }
         .tip {
             background: #2a2a5a;
             padding: 12px;
@@ -127,19 +147,21 @@
             margin: 20px 0;
         }
         hr {
-            border-color: #3a3a5a;
+            border-color: #2a2a3a;
+            margin: 2rem 0;
         }
         .toolbar {
-            margin-bottom: 1rem;
             display: flex;
-            gap: 0.5rem;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
         }
         .toolbar button {
             background: #2a2a3a;
             border: none;
             color: #ddd;
-            padding: 5px 12px;
-            border-radius: 20px;
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
             cursor: pointer;
             font-family: monospace;
         }
@@ -148,137 +170,218 @@
             color: #111;
             font-weight: bold;
         }
+        .progress-badge {
+            background: #2a6e3a;
+            color: #b0ffb0;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-left: 1rem;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="toolbar">
-        <button id="reset-today">🔄 重置今日进度</button>
+        <button id="reset-progress">🔄 重置今日进度</button>
         <button id="export-page" class="primary">📤 导出为静态网页</button>
+        <span class="progress-badge" id="progress-badge">进度: 0%</span>
     </div>
 
-    <h1>📡 Day 1 · 环境搭建（4小时极速版）</h1>
-    <p><strong>核心问题</strong>：如何在一夜之间搭建一个合法的“渗透靶场”？</p>
+    <h1>📡 Day 1 · 渗透测试环境搭建</h1>
+    <div class="subtitle">预计耗时：6-8小时 | 核心问题：如何搭建一个合法、可控的渗透测试实验室？</div>
 
+    <!-- 今日目标 -->
     <div class="card">
         <h2>🎯 今日目标</h2>
         <ul>
-            <li>安装虚拟化软件（VMware Workstation Pro）</li>
-            <li>导入Kali Linux 攻击机</li>
-            <li>导入Metasploitable 2 靶机</li>
-            <li>配置网络互通（ping通）</li>
-            <li>执行首次nmap扫描，验证环境</li>
+            <li>理解虚拟化原理，安装 VMware Workstation Pro</li>
+            <li>下载并配置 Kali Linux 攻击机（虚拟机）</li>
+            <li>下载并配置 Metasploitable 2 靶机（虚拟机）</li>
+            <li>掌握虚拟机网络模式（NAT/桥接/仅主机）并实现互通</li>
+            <li>使用 nmap 进行首次扫描，验证环境</li>
+            <li>了解渗透测试流程与法律边界</li>
         </ul>
     </div>
 
+    <!-- 详细步骤 -->
     <div class="card">
-        <h2>⚙️ 实战步骤</h2>
-        <h3>1. 安装VMware（10分钟）</h3>
-        <p>官网下载 <a href="https://support.broadcom.com/group/ecx/productdownloads" target="_blank">VMware Workstation Pro</a>（现免费），安装时选择“以管理员身份运行”。安装后重启。</p>
+        <h2>⚙️ 实战步骤（6小时深度版）</h2>
+        
+        <h3>阶段一：虚拟化基础（1小时）</h3>
+        <p><strong>理论：</strong> 什么是虚拟化？为什么渗透测试需要隔离环境？</p>
+        <ul>
+            <li>学习 VMware 三种网络模式：桥接、NAT、仅主机</li>
+            <li>下载 VMware Workstation Pro（<a href="https://support.broadcom.com/group/ecx/productdownloads" target="_blank">官方免费下载</a>）</li>
+            <li>以管理员身份安装，重启电脑</li>
+        </ul>
+        <pre><code># 验证 VMware 服务是否运行（Windows）
+services.msc
+# 确保 VMware NAT Service 和 VMware DHCP Service 正在运行</code></pre>
 
-        <h3>2. 下载并导入Kali Linux（30分钟）</h3>
-        <p>从 <a href="https://www.kali.org/get-kali/#kali-virtual-machines" target="_blank">Kali 官方</a> 下载 VMware 镜像（.7z），解压后用VMware打开 .vmx 文件。<br>
-        启动后登录 <code>kali / kali</code>，打开终端：</p>
-        <pre><code>sudo passwd root      # 设置root密码
-sudo su               # 切换root
-apt update            # 更新软件源（可选，可跳过加快速度）</code></pre>
-
-        <h3>3. 下载并导入Metasploitable 2（30分钟）</h3>
-        <p>从 <a href="https://sourceforge.net/projects/metasploitable/" target="_blank">SourceForge</a> 下载 Metasploitable-2.zip，用7-Zip解压，VMware打开 .vmx。<br>
-        网络适配器设为 <strong>NAT模式</strong>（与Kali保持一致）。<br>
-        启动后登录：<code>msfadmin / msfadmin</code></p>
-
-        <h3>4. 网络连通性验证（15分钟）</h3>
-        <p>在Metasploitable中执行 <code>ifconfig</code> 记下IP（如192.168.xx.xx）。<br>
-        在Kali终端执行：<code>ping 靶机IP</code>，应收到回复。</p>
+        <h3>阶段二：部署 Kali Linux（1.5小时）</h3>
+        <p>下载 Kali Linux 官方虚拟机镜像：<a href="https://www.kali.org/get-kali/#kali-virtual-machines" target="_blank">Kali VMware 镜像</a>（约3.5GB）</p>
+        <ul>
+            <li>解压 .7z 文件（使用 7-Zip）</li>
+            <li>在 VMware 中打开 .vmx 文件</li>
+            <li>启动虚拟机，登录：<code>kali / kali</code></li>
+            <li>设置 root 密码并更新系统</li>
+        </ul>
+        <pre><code>sudo passwd root          # 设置 root 密码
+sudo su                   # 切换到 root
+apt update && apt upgrade -y   # 更新系统（耗时较长，可后台运行）
+apt install -y kali-linux-headless   # 安装核心工具集（可选）</code></pre>
         <div class="tip">
-            💡 若ping不通：检查两台虚拟机网络适配器是否都选“NAT模式”；重启VMware网络服务。
+            💡 更新系统可能需要30-60分钟，建议利用这段时间学习《Kali Linux 工具集概览》或继续下一步。
         </div>
 
-        <h3>5. 第一次扫描（20分钟）</h3>
-        <p>在Kali中执行：</p>
-        <pre><code>nmap -sV -O 靶机IP</code></pre>
-        <p>预期看到开放端口：21(vsftpd 2.3.4)，22(OpenSSH)，80(Apache)，445(Samba)，3306(MySQL)等。<br>
-        保存结果：<code>nmap -sV -O -oA metasploitable_scan 靶机IP</code></p>
+        <h3>阶段三：部署 Metasploitable 2（1小时）</h3>
+        <p>下载 Metasploitable 2：<a href="https://sourceforge.net/projects/metasploitable/" target="_blank">SourceForge 链接</a>（约800MB）</p>
+        <ul>
+            <li>使用 7-Zip 解压（避免文件名损坏）</li>
+            <li>在 VMware 中打开 .vmx 文件，设置网络适配器为 <strong>NAT模式</strong></li>
+            <li>启动虚拟机，登录：<code>msfadmin / msfadmin</code></li>
+            <li>查看 IP 地址：<code>ifconfig</code></li>
+        </ul>
+        <pre><code># 在 Metasploitable 中执行
+ifconfig eth0
+# 记录 IP（例如 192.168.xxx.xxx）</code></pre>
 
-        <h3>6. 整理笔记（10分钟）</h3>
-        <p>记录Kali IP、靶机IP、扫描结果截图或文本，写入个人笔记。</p>
+        <h3>阶段四：网络连通性验证（1小时）</h3>
+        <p>在 Kali 中 ping 靶机 IP，确保网络互通。</p>
+        <pre><code>ping 靶机IP -c 4</code></pre>
+        <p>如果不通，排查步骤：</p>
+        <ul>
+            <li>确认两台虚拟机网络适配器均为 NAT</li>
+            <li>检查 VMware NAT 服务是否运行</li>
+            <li>在 Kali 中重启网络：<code>systemctl restart networking</code></li>
+            <li>在靶机中重启网络：<code>sudo ifdown eth0 && sudo ifup eth0</code></li>
+        </ul>
+
+        <h3>阶段五：首次扫描与侦察（1.5小时）</h3>
+        <p>使用 nmap 对靶机进行基础扫描，理解开放端口背后的服务。</p>
+        <pre><code># 基础扫描
+nmap -sV -O 靶机IP
+
+# 全端口扫描（耗时约10分钟）
+nmap -p- -T4 靶机IP
+
+# 保存结果
+nmap -sV -O -oA metasploitable_scan 靶机IP</code></pre>
+        <p>分析扫描结果：</p>
+        <ul>
+            <li>开放了哪些端口？21(FTP), 22(SSH), 80(HTTP), 445(SMB), 3306(MySQL) 等</li>
+            <li>服务版本 vsftpd 2.3.4 存在已知后门，后续将利用</li>
+            <li>操作系统为 Linux 2.6.x</li>
+        </ul>
+        <div class="tip">
+            💡 深入思考：为什么 Metasploitable 故意保留这么多漏洞？这反映了真实世界的哪些安全问题？
+        </div>
+
+        <h3>阶段六：环境加固与快照（30分钟）</h3>
+        <p>在 VMware 中为两台虚拟机创建快照，方便后续随时恢复初始状态。</p>
+        <ul>
+            <li>关闭虚拟机 → 右键 → 快照 → 拍摄快照</li>
+            <li>命名：Kali_initial, Metasploitable_initial</li>
+        </ul>
+        <p>学习如何利用快照回滚，避免重复安装。</p>
     </div>
 
+    <!-- 验收清单 -->
     <div class="card">
         <h2>✅ 验收清单</h2>
         <ul class="checklist" id="checklist-container">
-            <li><input type="checkbox" id="check_0"><label for="check_0">VMware中Kali和Metasploitable均能启动</label></li>
-            <li><input type="checkbox" id="check_1"><label for="check_1">Kali可以ping通Metasploitable</label></li>
-            <li><input type="checkbox" id="check_2"><label for="check_2">nmap扫描显示至少5个开放端口，且包含vsftpd 2.3.4</label></li>
-            <li><input type="checkbox" id="check_3"><label for="check_3">已记录IP地址和扫描输出</label></li>
+            <li><input type="checkbox" id="check0"><label for="check0">VMware Workstation 安装成功，能正常启动虚拟机</label></li>
+            <li><input type="checkbox" id="check1"><label for="check1">Kali Linux 虚拟机导入成功，可登录桌面并打开终端</label></li>
+            <li><input type="checkbox" id="check2"><label for="check2">Metasploitable 2 导入成功，可登录 msfadmin</label></li>
+            <li><input type="checkbox" id="check3"><label for="check3">两台虚拟机网络互通（Kali ping 通靶机）</label></li>
+            <li><input type="checkbox" id="check4"><label for="check4">成功执行 nmap 扫描，并记录了至少5个开放端口</label></li>
+            <li><input type="checkbox" id="check5"><label for="check5">创建了虚拟机快照，了解快照作用</label></li>
+            <li><input type="checkbox" id="check6"><label for="check6">理解了 NAT/桥接/仅主机模式的区别</label></li>
+            <li><input type="checkbox" id="check7"><label for="check7">阅读了《渗透测试法律边界》相关资料（建议搜索“渗透测试授权书”）</label></li>
         </ul>
     </div>
 
+    <!-- 问题记录 -->
     <div class="card">
         <h2>📝 问题记录</h2>
         <div class="question-box">
-            <textarea id="question-text" rows="4" placeholder="记录今天遇到的问题、解决思路、重要知识点..."></textarea>
+            <textarea id="question-text" rows="6" placeholder="记录今天遇到的问题、解决方案、关键命令、重要发现..."></textarea>
         </div>
     </div>
 
+    <!-- 截图区域 -->
     <div class="card">
         <h2>📸 截图记录</h2>
         <div id="screenshot-area" class="screenshot-area"></div>
         <div class="add-screenshot" id="add-screenshot-btn">
             📷 上传截图<br>
-            <span style="font-size:0.7rem;">点击或粘贴</span>
+            <span style="font-size:0.7rem;">点击或粘贴 (Ctrl+V)</span>
         </div>
         <input type="file" id="screenshot-file-input" accept="image/*" multiple style="display:none">
     </div>
 
     <hr>
-    <p>📌 明天预告：信息收集 — 如何像黑客一样“画出”目标的全貌？</p>
+    <p>📌 明天预告：Day 2 · 信息收集（主动扫描）—— 如何像黑客一样“绘制”目标全貌？</p>
 </div>
 
 <script>
-    // 当前页面标识（使用文件名或自定义key，建议用 day1）
-    const PAGE_KEY = 'day1';
+    // ==================== 进度保存逻辑 ====================
+    const STORAGE_KEY = 'day1_progress';
+    let progress = {
+        checklist: [],
+        question: '',
+        screenshots: []
+    };
 
-    // 加载保存的数据
-    function loadData() {
-        const saved = localStorage.getItem(`pentest_${PAGE_KEY}`);
+    function loadProgress() {
+        const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
-            const data = JSON.parse(saved);
+            progress = JSON.parse(saved);
             // 恢复复选框
-            const checkboxes = document.querySelectorAll('#checklist-container input');
-            if (data.checklistState) {
-                checkboxes.forEach((cb, idx) => {
-                    if (data.checklistState[idx] !== undefined) {
-                        cb.checked = data.checklistState[idx];
-                    }
-                });
-            }
+            const checkboxes = document.querySelectorAll('.checklist input');
+            checkboxes.forEach((cb, idx) => {
+                if (progress.checklist[idx] !== undefined) {
+                    cb.checked = progress.checklist[idx];
+                }
+            });
             // 恢复问题文本
-            const question = document.getElementById('question-text');
-            if (data.questionText) question.value = data.questionText;
+            const textarea = document.getElementById('question-text');
+            if (textarea && progress.question) {
+                textarea.value = progress.question;
+            }
             // 恢复截图
             const area = document.getElementById('screenshot-area');
-            if (data.screenshots && data.screenshots.length) {
-                data.screenshots.forEach(src => addScreenshotElement(src, area));
+            if (progress.screenshots && progress.screenshots.length) {
+                progress.screenshots.forEach(src => addScreenshotElement(src, area, false)); // false表示不自动保存
             }
         }
+        updateProgressBadge();
     }
 
-    // 保存当前数据
-    function saveData() {
-        const checkboxes = document.querySelectorAll('#checklist-container input');
-        const checklistState = Array.from(checkboxes).map(cb => cb.checked);
-        const questionText = document.getElementById('question-text').value;
-        const screenshots = [];
-        const imgs = document.querySelectorAll('#screenshot-area .screenshot-item img');
-        imgs.forEach(img => screenshots.push(img.src));
-        const data = { checklistState, questionText, screenshots };
-        localStorage.setItem(`pentest_${PAGE_KEY}`, JSON.stringify(data));
+    function saveProgress() {
+        // 保存复选框状态
+        const checkboxes = document.querySelectorAll('.checklist input');
+        progress.checklist = Array.from(checkboxes).map(cb => cb.checked);
+        // 保存问题文本
+        const textarea = document.getElementById('question-text');
+        if (textarea) progress.question = textarea.value;
+        // 截图已经通过 addScreenshotElement 实时更新 progress.screenshots
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+        updateProgressBadge();
     }
 
-    // 添加截图元素
-    function addScreenshotElement(src, container) {
+    function updateProgressBadge() {
+        const total = progress.checklist.length;
+        const completed = progress.checklist.filter(v => v === true).length;
+        const percent = total ? Math.round((completed / total) * 100) : 0;
+        const badge = document.getElementById('progress-badge');
+        if (badge) badge.innerText = `进度: ${percent}%`;
+    }
+
+    // 截图相关
+    function addScreenshotElement(src, container, autoSave = true) {
         const div = document.createElement('div');
         div.className = 'screenshot-item';
         div.innerHTML = `
@@ -288,19 +391,20 @@ apt update            # 更新软件源（可选，可跳过加快速度）</cod
         const delBtn = div.querySelector('.delete-screenshot');
         delBtn.addEventListener('click', () => {
             div.remove();
-            saveData();
+            // 更新 progress.screenshots
+            const imgs = document.querySelectorAll('#screenshot-area .screenshot-item img');
+            progress.screenshots = Array.from(imgs).map(img => img.src);
+            if (autoSave) saveProgress();
         });
         container.appendChild(div);
-        saveData();
+        if (autoSave) {
+            const imgs = document.querySelectorAll('#screenshot-area .screenshot-item img');
+            progress.screenshots = Array.from(imgs).map(img => img.src);
+            saveProgress();
+        }
     }
 
-    // 绑定事件
-    function bindEvents() {
-        const checkboxes = document.querySelectorAll('#checklist-container input');
-        checkboxes.forEach(cb => cb.addEventListener('change', saveData));
-        const question = document.getElementById('question-text');
-        question.addEventListener('input', saveData);
-
+    function initScreenshotHandlers() {
         const addBtn = document.getElementById('add-screenshot-btn');
         const fileInput = document.getElementById('screenshot-file-input');
         const area = document.getElementById('screenshot-area');
@@ -320,7 +424,6 @@ apt update            # 更新软件源（可选，可跳过加快速度）</cod
             fileInput.value = '';
         });
 
-        // 粘贴图片
         document.addEventListener('paste', (e) => {
             const items = e.clipboardData.items;
             for (let item of items) {
@@ -335,35 +438,26 @@ apt update            # 更新软件源（可选，可跳过加快速度）</cod
                 }
             }
         });
+    }
 
-        // 重置今日进度
-        document.getElementById('reset-today').addEventListener('click', () => {
-            if (confirm('确定重置今天的全部进度吗？(复选框、笔记、截图将被清空)')) {
-                localStorage.removeItem(`pentest_${PAGE_KEY}`);
-                // 清空UI
-                document.querySelectorAll('#checklist-container input').forEach(cb => cb.checked = false);
-                document.getElementById('question-text').value = '';
-                const area = document.getElementById('screenshot-area');
-                area.innerHTML = '';
-                saveData(); // 保存空状态
-            }
-        });
+    // 重置进度
+    function resetProgress() {
+        if (confirm('确定重置今天的全部进度吗？所有勾选、笔记、截图将被清空。')) {
+            localStorage.removeItem(STORAGE_KEY);
+            progress = { checklist: [], question: '', screenshots: [] };
+            location.reload();
+        }
+    }
 
-        // 导出静态网页
-        document.getElementById('export-page').addEventListener('click', () => {
-            // 获取当前所有数据
-            const checkboxes = document.querySelectorAll('#checklist-container input');
-            const checklistState = Array.from(checkboxes).map(cb => cb.checked);
-            const questionText = document.getElementById('question-text').value;
-            const screenshots = [];
-            const imgs = document.querySelectorAll('#screenshot-area .screenshot-item img');
-            imgs.forEach(img => screenshots.push(img.src));
+    // 导出静态网页
+    function exportPage() {
+        const checkboxes = document.querySelectorAll('.checklist input');
+        const checklistState = Array.from(checkboxes).map(cb => cb.checked);
+        const questionText = document.getElementById('question-text').value;
+        const screenshots = [];
+        document.querySelectorAll('#screenshot-area .screenshot-item img').forEach(img => screenshots.push(img.src));
 
-            // 获取页面主要内容（排除工具栏和脚本部分，但保留所有卡片内容）
-            const mainContent = document.querySelector('.container').cloneNode(true);
-            // 移除工具栏中的按钮事件避免冲突，但保留按钮文字
-            // 生成导出HTML
-            const exportHtml = `<!DOCTYPE html>
+        const exportHtml = `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -373,13 +467,11 @@ apt update            # 更新软件源（可选，可跳过加快速度）</cod
         body { background: #1e1e2f; color: #e0e0e0; font-family: monospace; padding: 2rem; line-height: 1.5; }
         .card { background: #11111f; border-radius: 20px; padding: 1.5rem; margin-bottom: 2rem; }
         h1 { color: #4c9aff; }
-        h2 { color: #bbd9ff; border-left: 4px solid #4c9aff; padding-left: 0.8rem; }
+        h2 { color: #bbd9ff; }
         .checklist li { margin: 0.5rem 0; list-style: none; }
         .checklist li.completed { text-decoration: line-through; color: #8a8aa5; }
         .screenshot-area { display: flex; flex-wrap: wrap; gap: 1rem; }
         .screenshot-item img { max-width: 200px; border-radius: 8px; }
-        hr { border-color: #2a2a3a; }
-        pre { background: #0a0a14; padding: 1rem; overflow-x: auto; }
     </style>
 </head>
 <body>
@@ -388,38 +480,12 @@ apt update            # 更新软件源（可选，可跳过加快速度）</cod
         <p><strong>导出时间：</strong> ${new Date().toLocaleString()}</p>
         <div class="card">
             <h2>🎯 今日目标</h2>
-            <ul>
-                <li>安装虚拟化软件（VMware Workstation Pro）</li>
-                <li>导入Kali Linux 攻击机</li>
-                <li>导入Metasploitable 2 靶机</li>
-                <li>配置网络互通（ping通）</li>
-                <li>执行首次nmap扫描，验证环境</li>
-            </ul>
-        </div>
-        <div class="card">
-            <h2>⚙️ 实战步骤</h2>
-            <h3>1. 安装VMware（10分钟）</h3>
-            <p>官网下载 <a href="https://support.broadcom.com/group/ecx/productdownloads" target="_blank">VMware Workstation Pro</a>（现免费），安装时选择“以管理员身份运行”。安装后重启。</p>
-            <h3>2. 下载并导入Kali Linux（30分钟）</h3>
-            <p>从 <a href="https://www.kali.org/get-kali/#kali-virtual-machines" target="_blank">Kali 官方</a> 下载 VMware 镜像（.7z），解压后用VMware打开 .vmx 文件。<br>启动后登录 <code>kali / kali</code>，打开终端：</p>
-            <pre><code>sudo passwd root      # 设置root密码\nsudo su               # 切换root\napt update            # 更新软件源（可选，可跳过加快速度）</code></pre>
-            <h3>3. 下载并导入Metasploitable 2（30分钟）</h3>
-            <p>从 <a href="https://sourceforge.net/projects/metasploitable/" target="_blank">SourceForge</a> 下载 Metasploitable-2.zip，用7-Zip解压，VMware打开 .vmx。<br>网络适配器设为 <strong>NAT模式</strong>（与Kali保持一致）。<br>启动后登录：<code>msfadmin / msfadmin</code></p>
-            <h3>4. 网络连通性验证（15分钟）</h3>
-            <p>在Metasploitable中执行 <code>ifconfig</code> 记下IP（如192.168.xx.xx）。<br>在Kali终端执行：<code>ping 靶机IP</code>，应收到回复。</p>
-            <div class="tip">💡 若ping不通：检查两台虚拟机网络适配器是否都选“NAT模式”；重启VMware网络服务。</div>
-            <h3>5. 第一次扫描（20分钟）</h3>
-            <p>在Kali中执行：</p><pre><code>nmap -sV -O 靶机IP</code></pre><p>预期看到开放端口：21(vsftpd 2.3.4)，22(OpenSSH)，80(Apache)，445(Samba)，3306(MySQL)等。<br>保存结果：<code>nmap -sV -O -oA metasploitable_scan 靶机IP</code></p>
-            <h3>6. 整理笔记（10分钟）</h3>
-            <p>记录Kali IP、靶机IP、扫描结果截图或文本，写入个人笔记。</p>
+            <ul><li>理解虚拟化原理，安装 VMware Workstation Pro</li><li>下载并配置 Kali Linux 攻击机</li><li>下载并配置 Metasploitable 2 靶机</li><li>掌握虚拟机网络模式并实现互通</li><li>使用 nmap 进行首次扫描</li><li>了解渗透测试流程与法律边界</li></ul>
         </div>
         <div class="card">
             <h2>✅ 验收清单</h2>
             <ul class="checklist">
-                <li class="${checklistState[0] ? 'completed' : ''}">${checklistState[0] ? '✔️ ' : '☐ '}VMware中Kali和Metasploitable均能启动</li>
-                <li class="${checklistState[1] ? 'completed' : ''}">${checklistState[1] ? '✔️ ' : '☐ '}Kali可以ping通Metasploitable</li>
-                <li class="${checklistState[2] ? 'completed' : ''}">${checklistState[2] ? '✔️ ' : '☐ '}nmap扫描显示至少5个开放端口，且包含vsftpd 2.3.4</li>
-                <li class="${checklistState[3] ? 'completed' : ''}">${checklistState[3] ? '✔️ ' : '☐ '}已记录IP地址和扫描输出</li>
+                ${document.querySelectorAll('.checklist label').length ? Array.from(document.querySelectorAll('.checklist label')).map((label, idx) => `<li class="${checklistState[idx] ? 'completed' : ''}">${checklistState[idx] ? '✔️ ' : '☐ '}${label.innerText}</li>`).join('') : ''}
             </ul>
         </div>
         <div class="card">
@@ -433,25 +499,37 @@ apt update            # 更新软件源（可选，可跳过加快速度）</cod
             </div>
         </div>
         <hr>
-        <p style="text-align:center">本文件为渗透学习系统导出，包含当时的学习进度和记录。</p>
+        <p>本文件为渗透学习系统导出，包含当时的学习进度和记录。</p>
     </div>
 </body>
 </html>`;
-            const blob = new Blob([exportHtml], {type: 'text/html'});
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.href = url;
-            link.download = `pentest_day1_snapshot.html`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        });
+        const blob = new Blob([exportHtml], {type: 'text/html'});
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.download = `pentest_day1_${new Date().toISOString().slice(0,10)}.html`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    // 绑定事件
+    document.getElementById('reset-progress').addEventListener('click', resetProgress);
+    document.getElementById('export-page').addEventListener('click', exportPage);
+
+    // 监听变化自动保存
+    function bindAutoSave() {
+        const checkboxes = document.querySelectorAll('.checklist input');
+        checkboxes.forEach(cb => cb.addEventListener('change', saveProgress));
+        const textarea = document.getElementById('question-text');
+        if (textarea) textarea.addEventListener('input', saveProgress);
     }
 
     // 初始化
-    loadData();
-    bindEvents();
+    loadProgress();
+    initScreenshotHandlers();
+    bindAutoSave();
 </script>
 </body>
 </html>
