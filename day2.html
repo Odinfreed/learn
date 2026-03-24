@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Day 2 · 信息收集（主动扫描） | 渗透测试学习</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1e1e2f;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', 'Fira Code', monospace;
+            padding: 2rem;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #4c9aff;
+            border-left: 5px solid #4c9aff;
+            padding-left: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            color: #bbd9ff;
+            border-left: 4px solid #4c9aff;
+            padding-left: 0.8rem;
+            margin: 1.5rem 0 1rem 0;
+        }
+
+        h3 {
+            color: #9eb3ff;
+            margin: 1rem 0 0.5rem;
+        }
+
+        .card {
+            background: #11111f;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist li {
+            margin: 0.8rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .checklist input[type="checkbox"] {
+            width: 1.2rem;
+            height: 1.2rem;
+            cursor: pointer;
+        }
+
+        .checklist label {
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .question-box textarea {
+            width: 100%;
+            background: #0a0a14;
+            border: 1px solid #2a2a3a;
+            color: #e0e0e0;
+            padding: 0.8rem;
+            border-radius: 12px;
+            font-family: monospace;
+            resize: vertical;
+            margin-top: 0.5rem;
+        }
+
+        .screenshot-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .screenshot-item {
+            position: relative;
+            background: #0a0a14;
+            border-radius: 12px;
+            padding: 0.5rem;
+            border: 1px solid #2a2a3a;
+            max-width: 200px;
+        }
+
+        .screenshot-item img {
+            max-width: 100%;
+            border-radius: 8px;
+            display: block;
+        }
+
+        .delete-screenshot {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .add-screenshot {
+            background: #2a2a3a;
+            border: 1px dashed #6c6c8c;
+            border-radius: 12px;
+            padding: 0.8rem;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .add-screenshot:hover {
+            background: #3a3a5a;
+        }
+
+        code, pre {
+            background: #0a0a14;
+            padding: 0.2rem 0.4rem;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+        }
+
+        pre {
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 0.5rem 0;
+        }
+
+        .tip {
+            background: #2a2a5a;
+            padding: 12px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        hr {
+            border-color: #2a2a3a;
+        }
+
+        .toolbar {
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .toolbar button {
+            background: #2a2a3a;
+            border: none;
+            color: #ddd;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: monospace;
+            transition: 0.2s;
+        }
+
+        .toolbar button.primary {
+            background: #4c9aff;
+            color: #111;
+            font-weight: bold;
+        }
+
+        .toolbar button:hover {
+            background: #3a3a5a;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📡 Day 2 · 信息收集（主动扫描）</h1>
+    <p><strong>核心问题</strong>：在发动攻击前，如何尽可能多地了解目标？</p>
+
+    <div class="toolbar">
+        <button id="reset-today">🔄 重置今日进度</button>
+        <button id="export-page" class="primary">📤 导出为静态网页</button>
+    </div>
+
+    <div class="card">
+        <h2>🎯 今日目标</h2>
+        <ul>
+            <li>学习Nmap高级选项（-sS, -sV, -O, -p-）</li>
+            <li>识别操作系统与服务版本</li>
+            <li>编写资产报告（开放端口、服务版本、OS信息）</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>⚙️ 实战步骤</h2>
+        <h3>1. Nmap高级扫描</h3>
+        <p>使用以下命令对 Metasploitable 2 进行全端口扫描，并探测服务版本和操作系统：</p>
+        <pre><code>nmap -sS -sV -O -p- 192.168.x.x</code></pre>
+        <p><code>-sS</code> 半开扫描，<code>-sV</code> 服务版本，<code>-O</code> 操作系统识别，<code>-p-</code> 扫描全部65535端口。</p>
+
+        <h3>2. 服务枚举</h3>
+        <p>使用脚本获取更详细的服务信息：</p>
+        <pre><code>nmap --script=banner 192.168.x.x</code></pre>
+
+        <h3>3. 编写资产报告</h3>
+        <p>记录开放端口、对应的服务版本、操作系统信息，形成资产清单。</p>
+        <div class="tip">
+            💡 提示：重点关注版本号较旧的服务，例如 vsftpd 2.3.4、OpenSSH 4.7p1 等，这些往往是突破口。
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>✅ 验收清单</h2>
+        <ul class="checklist" id="checklist-container">
+            <li><input type="checkbox" id="check_0"><label for="check_0">完成一次全端口扫描（-p-）</label></li>
+            <li><input type="checkbox" id="check_1"><label for="check_1">获得服务版本列表（-sV）</label></li>
+            <li><input type="checkbox" id="check_2"><label for="check_2">成功识别操作系统（-O）</label></li>
+            <li><input type="checkbox" id="check_3"><label for="check_3">编写资产报告（Markdown或文本）</label></li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>📝 问题记录</h2>
+        <div class="question-box">
+            <textarea id="question-text" rows="4" placeholder="记录今天遇到的问题、解决思路、重要知识点..."></textarea>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📸 截图记录</h2>
+        <div id="screenshot-area" class="screenshot-area"></div>
+        <div class="add-screenshot" id="add-screenshot-btn">
+            📷 上传截图<br>
+            <span style="font-size:0.7rem;">点击或粘贴</span>
+        </div>
+        <input type="file" id="screenshot-file-input" accept="image/*" multiple style="display:none">
+    </div>
+
+    <hr>
+    <p>📌 明天预告：Day 3 · 被动信息收集 — 如何从公开渠道挖掘目标情报？</p>
+    <p>🔗 <a href="total_schedule.html" target="_blank">查看总日程规划</a> | <a href="index.html">返回主界面</a></p>
+</div>
+
+<script>
+    // 当前天数（0-based，Day2 对应索引 1）
+    const DAY_INDEX = 1;
+    // 存储键名
+    const STORAGE_KEY = `pentest_day_${DAY_INDEX}`;
+
+    // 初始化或加载已保存的数据
+    let savedData = null;
+
+    function loadSavedData() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+            savedData = JSON.parse(raw);
+        } else {
+            savedData = null;
+        }
+    }
+
+    function saveCurrentData() {
+        const checkboxes = document.querySelectorAll('#checklist-container input[type="checkbox"]');
+        const checklistState = Array.from(checkboxes).map(cb => cb.checked);
+        const questionText = document.getElementById('question-text').value;
+        const screenshotArea = document.getElementById('screenshot-area');
+        const screenshots = [];
+        const imgs = screenshotArea.querySelectorAll('.screenshot-item img');
+        imgs.forEach(img => screenshots.push(img.src));
+
+        const dataToSave = {
+            checklistState,
+            questionText,
+            screenshots,
+            lastUpdated: new Date().toISOString()
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+    }
+
+    function restoreSavedData() {
+        if (!savedData) return;
+
+        // 恢复复选框
+        const checkboxes = document.querySelectorAll('#checklist-container input[type="checkbox"]');
+        if (savedData.checklistState) {
+            checkboxes.forEach((cb, idx) => {
+                if (savedData.checklistState[idx] !== undefined) {
+                    cb.checked = savedData.checklistState[idx];
+                }
+            });
+        }
+
+        // 恢复问题文本
+        if (savedData.questionText) {
+            document.getElementById('question-text').value = savedData.questionText;
+        }
+
+        // 恢复截图
+        if (savedData.screenshots && savedData.screenshots.length) {
+            const area = document.getElementById('screenshot-area');
+            savedData.screenshots.forEach(src => {
+                addScreenshotElement(src, area);
+            });
+        }
+    }
+
+    function addScreenshotElement(src, container) {
+        const div = document.createElement('div');
+        div.className = 'screenshot-item';
+        div.innerHTML = `
+            <img src="${src}" alt="screenshot">
+            <button class="delete-screenshot" title="删除">✖</button>
+        `;
+        const delBtn = div.querySelector('.delete-screenshot');
+        delBtn.addEventListener('click', () => {
+            div.remove();
+            saveCurrentData();
+        });
+        container.appendChild(div);
+    }
+
+    function bindCheckboxEvents() {
+        const checkboxes = document.querySelectorAll('#checklist-container input');
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', () => saveCurrentData());
+        });
+    }
+
+    function bindQuestionEvents() {
+        const textarea = document.getElementById('question-text');
+        textarea.addEventListener('input', () => saveCurrentData());
+    }
+
+    function bindScreenshotEvents() {
+        const addBtn = document.getElementById('add-screenshot-btn');
+        const fileInput = document.getElementById('screenshot-file-input');
+        const area = document.getElementById('screenshot-area');
+
+        addBtn.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            files.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        addScreenshotElement(ev.target.result, area);
+                        saveCurrentData();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            fileInput.value = '';
+        });
+
+        document.addEventListener('paste', (e) => {
+            const items = e.clipboardData.items;
+            for (let item of items) {
+                if (item.type.indexOf('image') !== -1) {
+                    const blob = item.getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        addScreenshotElement(ev.target.result, area);
+                        saveCurrentData();
+                    };
+                    reader.readAsDataURL(blob);
+                    break;
+                }
+            }
+        });
+    }
+
+    function resetToday() {
+        if (confirm('确定重置今天的全部进度吗？(复选框、笔记、截图将被清空)')) {
+            localStorage.removeItem(STORAGE_KEY);
+            // 清空界面
+            const checkboxes = document.querySelectorAll('#checklist-container input');
+            checkboxes.forEach(cb => cb.checked = false);
+            document.getElementById('question-text').value = '';
+            const screenshotArea = document.getElementById('screenshot-area');
+            screenshotArea.innerHTML = '';
+            // 重新加载数据（此时无数据，但保留空白状态）
+            savedData = null;
+        }
+    }
+
+    function exportAsStatic() {
+        const checkboxes = document.querySelectorAll('#checklist-container input');
+        const checklistState = Array.from(checkboxes).map(cb => cb.checked);
+        const questionText = document.getElementById('question-text').value;
+        const screenshots = [];
+        const imgs = document.querySelectorAll('#screenshot-area .screenshot-item img');
+        imgs.forEach(img => screenshots.push(img.src));
+
+        const dayTitle = "Day 2 · 信息收集（主动扫描）";
+        const goals = ["学习Nmap高级选项", "识别操作系统与服务版本", "编写资产报告"];
+        const stepsHtml = document.querySelector('.card:nth-child(3)').innerHTML;
+        const checklistItems = ["完成一次全端口扫描", "获得服务版本列表", "成功识别操作系统", "编写资产报告"];
+
+        const exportHtml = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>渗透学习快照 - ${dayTitle}</title>
+    <style>
+        body { background: #1e1e2f; color: #e0e0e0; font-family: monospace; padding: 2rem; line-height: 1.5; }
+        .card { background: #11111f; border-radius: 20px; padding: 1.5rem; margin-bottom: 2rem; }
+        h1 { color: #4c9aff; }
+        h2 { color: #bbd9ff; border-left: 4px solid #4c9aff; padding-left: 0.8rem; }
+        .checklist li { margin: 0.5rem 0; list-style: none; }
+        .checklist li.completed { text-decoration: line-through; color: #8a8aa5; }
+        .screenshot-area { display: flex; flex-wrap: wrap; gap: 1rem; }
+        .screenshot-item img { max-width: 200px; border-radius: 8px; }
+        hr { border-color: #2a2a3a; }
+        pre { background: #0a0a14; padding: 1rem; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container" style="max-width:1200px;margin:0 auto">
+        <h1>📡 渗透学习快照 · ${dayTitle}</h1>
+        <p><strong>导出时间：</strong> ${new Date().toLocaleString()}</p>
+        <div class="card">
+            <h2>🎯 今日目标</h2>
+            <ul>${goals.map(g => `<li>${g}</li>`).join('')}</ul>
+        </div>
+        <div class="card">
+            <h2>⚙️ 实战步骤</h2>
+            ${stepsHtml}
+        </div>
+        <div class="card">
+            <h2>✅ 验收清单</h2>
+            <ul class="checklist">
+                ${checklistItems.map((item, idx) => `<li class="${checklistState[idx] ? 'completed' : ''}">${checklistState[idx] ? '✔️ ' : '☐ '}${item}</li>`).join('')}
+            </ul>
+        </div>
+        <div class="card">
+            <h2>📝 问题记录</h2>
+            <p style="white-space: pre-wrap;">${questionText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
+        </div>
+        <div class="card">
+            <h2>📸 截图记录</h2>
+            <div class="screenshot-area">
+                ${screenshots.map(src => `<div class="screenshot-item"><img src="${src}" alt="screenshot"></div>`).join('')}
+            </div>
+        </div>
+        <hr>
+        <p style="text-align:center">本文件为渗透学习系统导出，包含当时的学习进度和记录。</p>
+    </div>
+</body>
+</html>`;
+
+        const blob = new Blob([exportHtml], {type: 'text/html'});
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.download = `pentest_day2_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.html`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    // 初始化
+    loadSavedData();
+    restoreSavedData();
+    bindCheckboxEvents();
+    bindQuestionEvents();
+    bindScreenshotEvents();
+
+    document.getElementById('reset-today').addEventListener('click', resetToday);
+    document.getElementById('export-page').addEventListener('click', exportAsStatic);
+</script>
+</body>
+</html>
