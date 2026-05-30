@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文人墨客·幻影密码（2.0.0）</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 100vh;
+            line-height: 1.6;
+            color: #333;
+            background:
+                linear-gradient(rgba(248,250,252,0.0), rgba(224,231,255,0.0)),
+                url('https://i0.hdslb.com/bfs/archive/9258bfba2e2a37334f4fd7bd16a2acd2f7636ec4.jpg');
+            background-size: cover, cover;
+            background-repeat: repeat-y, repeat-y;
+            background-position: top center, top center;
+            position: relative;
+        }
+        @media (max-width: 768px) {
+            body {
+                background:
+                    linear-gradient(rgba(248,250,252,0.0), rgba(224,231,255,0.0)),
+                    url('https://img0.baidu.com/it/u=777335852,1098779000&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1092');
+                background-size: cover, cover;
+                background-repeat: repeat-y, repeat-y;
+                background-position: top center, top center;
+            }
+        }
+        .content {
+            background: rgba(255,255,255,0.35) !important;
+            border-radius: 32px;
+            box-shadow: 0 8px 32px rgba(55,0,255,0.08), 0 1.5px 8px rgba(0,0,0,0.06);
+            padding: 48px 24px 32px 24px;
+            margin: 40px auto 0 auto;
+            max-width: 520px;
+            position: relative;
+            z-index: 1;
+        }
+        h2 {
+            font-size: 2.8em;
+            letter-spacing: 0.1em;
+            color: #3700ff;
+            text-shadow: 0 2px 12px rgba(55,0,255,0.08);
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #6d006d;
+            font-size: 1.2em;
+            margin-bottom: 28px;
+            font-family: '楷体', 'KaiTi', serif;
+            opacity: 0.85;
+        }
+        .file-box {
+            background: rgba(255,255,255,0.25) !important;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px rgba(55,0,255,0.04);
+            padding: 24px 0 18px 0;
+            margin-bottom: 24px;
+        }
+        #fileInput { display: none; }
+        .custom-upload {
+            display: inline-block;
+            padding: 18px 40px;
+            border: 2px dashed #3700ff;
+            border-radius: 30px;
+            cursor: pointer;
+            color: #3700ff;
+            transition: all 0.3s;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #e0e7ff 0%, #fff 100%);
+        }
+        .custom-upload:hover {
+            background: #f0f4ff;
+            border-color: #ff006d;
+            color: #ff006d;
+        }
+        .file-status {
+            margin-top: 16px;
+            color: #3700ff;
+            font-weight: 600;
+            font-size: 1.1em;
+            background: none;
+            padding-left: 0;
+        }
+        #key, #dec-key, #dec-ext, #dec-seq {
+            display: block;
+            margin: 30px auto 10px auto;
+            padding: 15px 25px;
+            width: 100%;
+            max-width: 280px;
+            border: 2px solid #3700ff;
+            background: #f8fafc;
+            color: #3700ff;
+            border-radius: 22px;
+            box-shadow: 0 1.5px 8px rgba(55,0,255,0.06);
+            transition: border 0.2s, box-shadow 0.2s;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        #key:focus, #dec-key:focus, #dec-ext:focus, #dec-seq:focus {
+            border: 2px solid #ff006d;
+            box-shadow: 0 0 0 2px #ff006d33;
+            outline: none;
+        }
+        .btn-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 40px 0 20px 0;
+            flex-wrap: wrap;
+        }
+        button, #downloadLink {
+            padding: 14px 40px;
+            border: none;
+            border-radius: 22px;
+            font-size: 1.15em;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            background: linear-gradient(135deg, #000000 20%, #000000 80%);
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(55,0,255,0.08);
+        }
+        button:active, #downloadLink:active {
+            transform: scale(0.97);
+        }
+        #modeSwitch {
+            margin-bottom: 32px;
+            font-size: 1.1em;
+            background: linear-gradient(90deg, #3700ff 0%, #ff006d 100%);
+            color: #fff;
+            border-radius: 22px;
+            box-shadow: 0 2px 8px rgba(55,0,255,0.08);
+            transition: background 0.3s;
+        }
+        #modeSwitch:hover {
+            background: linear-gradient(90deg, #ff006d 0%, #3700ff 100%);
+        }
+        #enc-info-box, #dec-info-box {
+            margin: 0 auto 20px auto;
+            max-width: 400px;
+            text-align: center;
+            border: 2px solid #3700ff;
+            border-width: 2.5px;
+            font-size: 1.13em;
+            background: linear-gradient(90deg, #f8fafc 0%, #e0e7ff 100%);
+            color: #3700ff;
+            margin-bottom: 10px;
+        }
+        #enc-seq-box {
+            border: 2px solid #ff006d;
+            color: #ff006d;
+            display: none;
+            background: #fff0fa;
+        }
+        #result {
+            text-align: center;
+            margin-top: 30px;
+            display: none;
+            background: rgba(55,0,255,0.04);
+            border-radius: 18px;
+            box-shadow: 0 2px 8px rgba(55,0,255,0.04);
+            padding: 18px 0 10px 0;
+        }
+        #downloadLink {
+            display: inline-block;
+            padding: 14px 35px;
+            background: linear-gradient(90deg, #3700ff 0%, #ff006d 100%);
+            color: #fff;
+            border-radius: 22px;
+            text-decoration: none;
+            font-size: 1.1em;
+            margin-top: 18px;
+        }
+        #downloadLink:hover {
+            background: linear-gradient(90deg, #ff006d 0%, #3700ff 100%);
+        }
+        #previewBtn {
+            background: #fff0fa;
+            color: #ff006d;
+            border: 2px solid #ff006d;
+            margin-left: 18px;
+            font-size: 1.05em;
+        }
+        #previewBtn:hover {
+            background: #ff006d;
+            color: #fff;
+        }
+        .corner-poem {
+            position: absolute;
+            right: 24px; bottom: 18px;
+            color: #b3b3b3;
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 1.08em;
+            opacity: 0.7;
+            pointer-events: none;
+            z-index: 2;
+            text-align: right;
+            line-height: 1.5;
+        }
+        .main-select {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            align-items: center;
+            justify-content: center;
+            margin: 60px 0 60px 0;
+        }
+        .main-btn {
+            font-size: 1.5em;
+            padding: 32px 0;
+            width: 80%;
+            max-width: 340px;
+            border-radius: 32px;
+            background: linear-gradient(90deg,#3700ff 0%,#ff006d 100%);
+            color: #fff;
+            border: none;
+            box-shadow: 0 4px 24px rgba(55,0,255,0.10);
+            cursor: pointer;
+            margin: 0 auto;
+            font-weight: bold;
+            letter-spacing: 2px;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .main-btn:hover {
+            background: linear-gradient(90deg,#ff006d 0%,#3700ff 100%);
+            transform: scale(1.03);
+        }
+        .back-home-btn {
+            display: block;
+            margin: 0 auto 24px auto;
+            background: linear-gradient(90deg,#3700ff 0%,#ff006d 100%);
+            color: #fff;
+            border: none;
+            border-radius: 22px;
+            font-size: 1.1em;
+            font-weight: 600;
+            padding: 12px 40px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(55,0,255,0.08);
+        }
+        .back-home-btn:hover {
+            background: linear-gradient(90deg,#ff006d 0%,#3700ff 100%);
+        }
+        @media (max-width: 768px) {
+            body { padding: 4vw; }
+            h2 { font-size: 1.3em; }
+            .subtitle { font-size: 1em; }
+            button, #downloadLink { padding: 10px 10px; font-size: 1em; border-radius:16px; }
+            #key, #dec-key, #dec-ext, #dec-seq, #textKey { padding: 8px 8px; font-size: 1em; border-radius:12px; }
+            .content { padding: 2vw 2vw 2vw 2vw; max-width: 99vw; border-radius:18px; }
+            .corner-poem { right: 4px; bottom: 2px; font-size: 0.9em; }
+            #textInput { font-size:0.98em; border-radius:10px; }
+            #textResult { font-size:0.98em; border-radius:10px; }
+            .btn-group { gap:8px; }
+            .file-box { padding: 10px 0 10px 0; border-radius:10px; }
+        }
+    </style>
+    <div class="content" style="max-width:98vw;padding:18px 2vw 18px 2vw;">
+        <h2 style="text-align:center;">文人墨客</h2>
+        <div class="subtitle">“落笔成诗，墨染流年”</div>
+        <div id="mainSelect" class="main-select">
+            <button id="toTextMode" class="main-btn">文字转换</button>
+            <button id="toFileMode" class="main-btn">文件转换</button>
+        </div>
+        <div id="file-section" style="display:none;">
+            <button id="backHomeFromFile" class="back-home-btn">返回首页</button>
+            <button id="fileModeSwitch" style="display:block;margin:0 auto 24px auto;background:linear-gradient(90deg,#3700ff 0%,#ff006d 100%);color:#fff;border-radius:22px;font-size:1.1em;font-weight:600;padding:12px 40px;box-shadow:0 2px 8px rgba(55,0,255,0.08);">切换为解密模式</button>
+            <div class="file-box" style="margin-bottom:18px;">
+                <input type="file" id="fileInput" multiple>
+                <label for="fileInput" class="custom-upload" style="width:100%;text-align:center;">📁 点击选择文件</label>
+                <div id="fileStatus" class="file-status">未选择任何文件</div>
+            </div>
+            <div id="progressArea" style="width:100%;max-width:400px;margin:0 auto 18px auto;display:none;">
+                <progress id="fileProgress" value="0" max="100" style="width:100%;height:18px;"></progress>
+                <div id="progressText" style="text-align:center;font-size:1em;color:#3700ff;margin-top:4px;"></div>
+            </div>
+            <div id="enc-mode">
+                <input type="text" id="key" maxlength="4" placeholder="请输入4位密码" style="margin:10px auto 10px auto;display:block;">
+                <input type="text" id="enc-remark" maxlength="50" placeholder="类型（可选）" style="margin:10px auto 10px auto;display:block;max-width:280px;">
+                <div id="enc-info-box"></div>
+                <div id="enc-seq-box"></div>
+            </div>
+            <div id="dec-mode" style="display:none;">
+                <div style="display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;">
+                    <input type="text" id="dec-key" maxlength="4" placeholder="4位密码" style="flex:1 1 80px;min-width:80px;">
+                    <span style="font-size:1.1em;color:#888;">+</span>
+                    <input type="text" id="dec-ext" maxlength="5" placeholder="文件格式" style="flex:1 1 80px;min-width:80px;">
+                </div>
+                <div id="dec-info-box"></div>
+                <input type="text" id="dec-seq" maxlength="32" placeholder="或输入特定序列组合" style="margin:10px auto 10px auto;display:block;">
+            </div>
+            <div class="btn-group" style="margin:24px 0 10px 0;">
+                <button id="execBtn" style="flex:1 1 120px;min-width:120px;">开始执行</button>
+            </div>
+            <div id="result">
+                <p>已生成文件：<span id="newFileName"></span></p>
+                <a href="#" id="downloadLink" download="">立即下载</a>
+                <button id="previewBtn" style="display:none;margin-left:20px;">在线预览</button>
+                <div id="zipTip" style="color:#c00;margin-top:10px;text-align:center;font-size:1em;display:none;"></div>
+            </div>
+        </div>
+        <div id="text-mode" style="display:none;">
+            <button id="backHomeFromText" class="back-home-btn">返回首页</button>
+            <textarea id="textInput" rows="5" placeholder="请输入要加密或解密的文字" style="width:100%;max-width:98vw;margin:10px auto 10px auto;display:block;padding:12px 10px;border-radius:14px;border:2px solid #3700ff;font-size:1.05em;"></textarea>
+            <input type="text" id="textKey" maxlength="8" placeholder="1-8位密码" style="margin:10px auto 10px auto;display:block;max-width:220px;">
+            <div class="btn-group" style="margin:18px 0 10px 0;gap:10px;">
+                <button id="textEncryptBtn" style="flex:1 1 100px;min-width:100px;">文字加密</button>
+                <button id="textDecryptBtn" style="flex:1 1 100px;min-width:100px;">文字解密</button>
+            </div>
+            <div id="textResult" style="display:none;margin:10px auto 0 auto;max-width:98vw;background:#f8fafc;border-radius:12px;padding:12px 8px;font-size:1.05em;word-break:break-all;color:#3700ff;text-align:left;"></div>
+        </div>
+        <div class="corner-poem" style="right:8px;bottom:6px;font-size:0.95em;"> </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <script>
+    window.onload = function() {
+        let isEncryptMode = true;
+        let lastBlobUrl = null, lastExt = '', lastFileName = '', lastFileType = '', lastRawBlob = null;
+        const SBOX = [
+            0x63,0x7c,0x77,0x7b,0xf2,0x6b,0x6f,0xc5,0x30,0x01,0x67,0x2b,0xfe,0xd7,0xab,0x76,
+            0xca,0x82,0xc9,0x7d,0xfa,0x59,0x47,0xf0,0xad,0xd4,0xa2,0xaf,0x9c,0xa4,0x72,0xc0,
+            0xb7,0xfd,0x93,0x26,0x36,0x3f,0xf7,0xcc,0x34,0xa5,0xe5,0xf1,0x71,0xd8,0x31,0x15,
+            0x04,0xc7,0x23,0xc3,0x18,0x96,0x05,0x9a,0x07,0x12,0x80,0xe2,0xeb,0x27,0xb2,0x75,
+            0x09,0x83,0x2c,0x1a,0x1b,0x6e,0x5a,0xa0,0x52,0x3b,0xd6,0xb3,0x29,0xe3,0x2f,0x84,
+            0x53,0xd1,0x00,0xed,0x20,0xfc,0xb1,0x5b,0x6a,0xcb,0xbe,0x39,0x4a,0x4c,0x58,0xcf,
+            0xd0,0xef,0xaa,0xfb,0x43,0x4d,0x33,0x85,0x45,0xf9,0x02,0x7f,0x50,0x3c,0x9f,0xa8,
+            0x51,0xa3,0x40,0x8f,0x92,0x9d,0x38,0xf5,0xbc,0xb6,0xda,0x21,0x10,0xff,0xf3,0xd2,
+            0xcd,0x0c,0x13,0xec,0x5f,0x97,0x44,0x17,0xc4,0xa7,0x7e,0x3d,0x64,0x5d,0x19,0x73,
+            0x60,0x81,0x4f,0xdc,0x22,0x2a,0x90,0x88,0x46,0xee,0xb8,0x14,0xde,0x5e,0x0b,0xdb,
+            0xe0,0x32,0x3a,0x0a,0x49,0x06,0x24,0x5c,0xc2,0xd3,0xac,0x62,0x91,0x95,0xe4,0x79,
+            0xe7,0xc8,0x37,0x6d,0x8d,0xd5,0x4e,0xa9,0x6c,0x56,0xf4,0xea,0x65,0x7a,0xae,0x08,
+            0xba,0x78,0x25,0x2e,0x1c,0xa6,0xb4,0xc6,0xe8,0xdd,0x74,0x1f,0x4b,0xbd,0x8b,0x8a,
+            0x70,0x3e,0xb5,0x66,0x48,0x03,0xf6,0x0e,0x61,0x35,0x57,0xb9,0x86,0xc1,0x1d,0x9e,
+            0xe1,0xf8,0x98,0x11,0x69,0xd9,0x8e,0x94,0x9b,0x1e,0x87,0xe9,0xce,0x55,0x28,0xdf,
+            0x8c,0xa1,0x89,0x0d,0xbf,0xe6,0x42,0x68,0x41,0x99,0x2d,0x0f,0xb0,0x54,0xbb,0x16
+        ];
+        const ISBOX = new Array(256);
+        for(let i=0;i<256;i++){ ISBOX[SBOX[i]] = i; }
+        function sbox(val) { return SBOX[val & 0xFF]; }
+        function sboxInv(val) { return ISBOX[val & 0xFF]; }
+        function transformData(data, key, isEncrypt) {
+            const encoder = new TextEncoder();
+            const keyBytes = encoder.encode(key);
+            let out = new Uint8Array(data.length);
+            for (let i = 0; i < data.length; i++) {
+                let byte = data[i];
+                if (isEncrypt) {
+                    for (let round = 0; round < 3; round++) {
+                        const keyIndex = (i + round) % keyBytes.length;
+                        const keyByte = keyBytes[keyIndex];
+                        byte ^= keyByte;
+                        byte = sbox(byte);
+                        byte = (byte << 3 | byte >>> 5) & 0xFF;
+                        byte = (byte + keyIndex + round) & 0xFF;
+                    }
+                } else {
+                    for (let round = 2; round >= 0; round--) {
+                        const keyIndex = (i + round) % keyBytes.length;
+                        const keyByte = keyBytes[keyIndex];
+                        byte = (byte - keyIndex - round + 256) & 0xFF;
+                        byte = (byte >>> 3 | byte << 5) & 0xFF;
+                        byte = sboxInv(byte);
+                        byte ^= keyByte;
+                    }
+                }
+                out[i] = byte;
+            }
+            return out;
+        }
+        function genSeq(ext, key) {
+            ext = (ext || '').replace(/[^a-zA-Z0-9]/g, '').slice(0,5).padEnd(5,' ');
+            key = (key || '').replace(/[^a-zA-Z0-9]/g, '').slice(0,4).padEnd(4,' ');
+            let raw = btoa(unescape(encodeURIComponent(ext + key)));
+            return raw.replace(/=+$/, '');
+        }
+        function parseSeq(seq) {
+            try {
+                let raw = decodeURIComponent(escape(atob(seq)));
+                if (raw.length < 9) return null;
+                let ext = raw.slice(0,5).replace(/\s+$/,'');
+                let key = raw.slice(5,9).replace(/\s+$/,'');
+                return { ext, key };
+            } catch (e) {
+                return null;
+            }
+        }
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const files = e.target.files;
+            if (files.length === 0) {
+                document.getElementById('fileStatus').textContent = '未选择任何文件';
+            } else if (files.length === 1) {
+                document.getElementById('fileStatus').textContent = `📄 已选择文件：${files[0].name}`;
+            } else {
+                document.getElementById('fileStatus').textContent = `📄 已选择${files.length}个文件`;
+            }
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('enc-seq-box').style.display = 'none';
+        });
+        document.getElementById('fileModeSwitch').onclick = function() {
+            isEncryptMode = !isEncryptMode;
+            document.getElementById('enc-mode').style.display = isEncryptMode ? '' : 'none';
+            document.getElementById('dec-mode').style.display = isEncryptMode ? 'none' : '';
+            this.textContent = isEncryptMode ? '切换为解密模式' : '切换为加密模式';
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('enc-seq-box').style.display = 'none';
+            document.getElementById('enc-info-box').textContent = '';
+            document.getElementById('dec-info-box').textContent = '';
+        };
+        document.getElementById('execBtn').onclick = async function() {
+            const progressArea = document.getElementById('progressArea');
+            const fileProgress = document.getElementById('fileProgress');
+            const progressText = document.getElementById('progressText');
+            progressArea.style.display = 'block';
+            fileProgress.value = 0;
+            progressText.textContent = '';
+            if (isEncryptMode) {
+                const fileInput = document.getElementById('fileInput');
+                const key = document.getElementById('key').value.trim();
+                const files = fileInput.files;
+                if (!files.length) { progressArea.style.display = 'none'; return alert('请先选择文件'); }
+                if (!/^[\w\d]{1,4}$/.test(key)) { progressArea.style.display = 'none'; return alert('密码必须为1-4位字母或数字'); }
+                let allLinks = [];
+                let allNames = [];
+                let ext = '';
+                for (let idx = 0; idx < files.length; idx++) {
+                    const file = files[idx];
+                    ext = file.name.split('.').pop().replace(/[^a-zA-Z0-9]/g, '').slice(0, 5);
+                    function randomName(len) {
+                        const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                        let str = '';
+                        for (let i = 0; i < len; i++) str += chars.charAt(Math.floor(Math.random() * chars.length));
+                        return str;
+                    }
+                    const randomFileName = randomName(8) + '.dream';
+                    const reader = new FileReader();
+                    await new Promise((resolve, reject) => {
+                        reader.onload = function(e) {
+                            const originalData = new Uint8Array(e.target.result);
+                            const typeValue = document.getElementById('enc-remark').value.trim();
+                            const encoder = new TextEncoder();
+                            const nameBytes = encoder.encode(file.name);
+                            const typeBytes = encoder.encode(typeValue);
+                            const nameLen = nameBytes.length;
+                            const typeLen = typeBytes.length;
+                            const header = new Uint8Array(4 + nameLen + 4 + typeLen);
+                            header[0] = (nameLen >> 24) & 0xFF;
+                            header[1] = (nameLen >> 16) & 0xFF;
+                            header[2] = (nameLen >> 8) & 0xFF;
+                            header[3] = nameLen & 0xFF;
+                            header.set(nameBytes, 4);
+                            header[4 + nameLen + 0] = (typeLen >> 24) & 0xFF;
+                            header[4 + nameLen + 1] = (typeLen >> 16) & 0xFF;
+                            header[4 + nameLen + 2] = (typeLen >> 8) & 0xFF;
+                            header[4 + nameLen + 3] = typeLen & 0xFF;
+                            header.set(typeBytes, 4 + nameLen + 4);
+                            const dataToEncrypt = new Uint8Array(header.length + originalData.length);
+                            dataToEncrypt.set(header, 0);
+                            dataToEncrypt.set(originalData, header.length);
+                            const chunkSize = 1024 * 256;
+                            let processedData = new Uint8Array(dataToEncrypt.length);
+                            let total = dataToEncrypt.length;
+                            let done = 0;
+                            function processChunk(start) {
+                                let end = Math.min(start + chunkSize, total);
+                                for (let i = start; i < end; i++) {
+                                    let byte = dataToEncrypt[i];
+                                    for (let round = 0; round < 3; round++) {
+                                        const keyIndex = (i + round) % key.length;
+                                        const keyByte = key.charCodeAt(keyIndex);
+                                        byte ^= keyByte;
+                                        byte = SBOX[byte & 0xFF];
+                                        byte = (byte << 3 | byte >>> 5) & 0xFF;
+                                        byte = (byte + keyIndex + round) & 0xFF;
+                                    }
+                                    processedData[i] = byte;
+                                }
+                                done = end;
+                                fileProgress.value = Math.round(done / total * 100);
+                                progressText.textContent = `加密进度：${file.name} ${fileProgress.value}%`;
+                                if (end < total) {
+                                    setTimeout(() => processChunk(end), 0);
+                                } else {
+                                    const newName = randomFileName;
+                                    const url = URL.createObjectURL(new Blob([processedData], { type: 'application/octet-stream' }));
+                                    allLinks.push({ url, name: newName, originalName: file.name, typeValue });
+                                    allNames.push(newName);
+                                    resolve();
+                                }
+                            }
+                            processChunk(0);
+                        };
+                        reader.onerror = reject;
+                        reader.readAsArrayBuffer(file);
+                    });
+                }
+                progressArea.style.display = 'none';
+                document.getElementById('enc-info-box').textContent = `文件格式：${ext}   密码：${key}`;
+                const seq = genSeq(ext, key);
+                const typeValue = document.getElementById('enc-remark').value.trim();
+                if (allLinks.length === 1) {
+                    const file = files[0];
+                    const fileName = file.name;
+                    const fileSize = file.size;
+                    const fileSizeStr = fileSize > 1024 * 1024 ? (fileSize / (1024 * 1024)).toFixed(2) + ' MB' : (fileSize / 1024).toFixed(2) + ' KB';
+                    const now = new Date();
+                    const timeStr = `${now.getFullYear()}_${now.getMonth()+1}_${now.getDate()}`;
+                    const newName = allLinks[0].name;
+                    document.getElementById('enc-seq-box').innerHTML =
+                        `原文件名：${fileName}<br>` +
+                        `新文件名：${newName}<br>` +
+                        `文件大小：${fileSizeStr}<br>` +
+                        `原文件格式：${ext}<br>` +
+                        `特定序列组合：${seq}<br>` +
+                        `文件加密时间：${timeStr}<br>` +
+                        `类型：${typeValue || ''}<br>` +
+                        `版本号：1.0.0`;
+                    document.getElementById('enc-seq-box').style.display = 'block';
+                } else {
+                    document.getElementById('enc-seq-box').style.display = 'none';
+                }
+                if (allLinks.length === 1) {
+                    document.getElementById('downloadLink').href = allLinks[0].url;
+                    document.getElementById('downloadLink').download = allLinks[0].name;
+                    document.getElementById('newFileName').textContent = allLinks[0].name;
+                    let tip = document.getElementById('zipTip');
+                    if (tip) tip.remove();
+                } else {
+                    let zip = null;
+                    try {
+                        zip = new JSZip();
+                    } catch (e) {
+                        alert('如需批量下载，请先引入 JSZip 库');
+                        return;
+                    }
+                    for (let i = 0; i < allLinks.length; i++) {
+                        const response = await fetch(allLinks[i].url);
+                        const blob = await response.blob();
+                        zip.file(allLinks[i].name, blob);
+                    }
+                    const zipBlob = await zip.generateAsync({ type: 'blob' });
+                    const zipUrl = URL.createObjectURL(zipBlob);
+                    document.getElementById('downloadLink').href = zipUrl;
+                    document.getElementById('downloadLink').download = '加密文件批量下载.zip';
+                    document.getElementById('newFileName').textContent = '加密文件批量下载.zip';
+                    let tip = document.getElementById('zipTip');
+                    if (!tip) {
+                        tip = document.createElement('div');
+                        tip.id = 'zipTip';
+                        tip.style = 'color:#c00;margin-top:10px;text-align:center;font-size:1em;';
+                        document.getElementById('result').appendChild(tip);
+                    }
+                    tip.textContent = '如遇 Windows 阻止访问zip文件，请右键文件属性，勾选“解除锁定”，或用7-Zip等工具解压。';
+                }
+                document.getElementById('result').style.display = 'block';
+            } else {
+                const fileInput = document.getElementById('fileInput');
+                const file = fileInput.files[0];
+                const ext = document.getElementById('dec-ext').value.trim();
+                const key = document.getElementById('dec-key').value.trim();
+                const seq = document.getElementById('dec-seq').value.trim();
+                let useExt = '', useKey = '';
+                if (seq) {
+                    const parsed = parseSeq(seq);
+                    if (!parsed) { progressArea.style.display = 'none'; return alert('特定序列组合无效'); }
+                    useExt = parsed.ext;
+                    useKey = parsed.key;
+                    document.getElementById('dec-info-box').textContent = `文件格式：${useExt}   密码：${useKey}`;
+                } else {
+                    useExt = ext;
+                    useKey = key;
+                    document.getElementById('dec-info-box').textContent = `文件格式：${useExt}   密码：${useKey}`;
+                }
+                if (!file) { progressArea.style.display = 'none'; return alert('请先选择文件'); }
+                if (!useExt && !useKey) { progressArea.style.display = 'none'; return alert('请至少输入文件格式和密码，或输入特定序列组合'); }
+                if (useKey && !/^[\w\d]{1,4}$/.test(useKey)) { progressArea.style.display = 'none'; return alert('密码必须为1-4位字母或数字'); }
+                if (useExt && !/^[a-zA-Z0-9]{1,5}$/.test(useExt)) { progressArea.style.display = 'none'; return alert('文件格式无效'); }
+                try {
+                    const reader = new FileReader();
+                    reader.readAsArrayBuffer(file);
+                    reader.onload = async function(e) {
+                        const encryptedData = new Uint8Array(e.target.result);
+                        const chunkSize = 1024 * 256;
+                        let processedData = new Uint8Array(encryptedData.length);
+                        let total = encryptedData.length;
+                        let done = 0;
+                        function processChunk(start) {
+                            let end = Math.min(start + chunkSize, total);
+                            for (let i = start; i < end; i++) {
+                                let byte = encryptedData[i];
+                                for (let round = 2; round >= 0; round--) {
+                                    const keyIndex = (i + round) % useKey.length;
+                                    const keyByte = useKey.charCodeAt(keyIndex);
+                                    byte = (byte - keyIndex - round + 256) & 0xFF;
+                                    byte = (byte >>> 3 | byte << 5) & 0xFF;
+                                    byte = ISBOX[byte & 0xFF];
+                                    byte ^= keyByte;
+                                }
+                                processedData[i] = byte;
+                            }
+                            done = end;
+                            fileProgress.value = Math.round(done / total * 100);
+                            progressText.textContent = `解密进度：${file.name} ${fileProgress.value}%`;
+                            if (end < total) {
+                                setTimeout(() => processChunk(end), 0);
+                            } else {
+                                let offset = 0;
+                                const getInt = () => {
+                                    return (processedData[offset++] << 24) | (processedData[offset++] << 16) | (processedData[offset++] << 8) | (processedData[offset++]);
+                                };
+                                const nameLen = getInt();
+                                const decoder = new TextDecoder();
+                                const name = decoder.decode(processedData.slice(offset, offset + nameLen));
+                                offset += nameLen;
+                                const typeLen = getInt();
+                                const typeValue = decoder.decode(processedData.slice(offset, offset + typeLen));
+                                offset += typeLen;
+                                const fileContent = processedData.slice(offset);
+                                const newName = name ? name : `解密文件.${useExt}`;
+                                const blob = new Blob([fileContent], { type: 'application/octet-stream' });
+                                const blobUrl = URL.createObjectURL(blob);
+                                document.getElementById('downloadLink').href = blobUrl;
+                                document.getElementById('downloadLink').download = newName;
+                                document.getElementById('newFileName').textContent = newName;
+                                document.getElementById('result').style.display = 'block';
+                                lastBlobUrl = blobUrl;
+                                lastExt = useExt.toLowerCase();
+                                const previewBtn = document.getElementById('previewBtn');
+                                if (["jpg","jpeg","png","gif","webp","bmp","svg","mp4","webm","ogg"].includes(lastExt)) {
+                                    previewBtn.style.display = 'inline-block';
+                                    previewBtn.disabled = false;
+                                } else {
+                                    previewBtn.style.display = 'inline-block';
+                                    previewBtn.disabled = false;
+                                }
+                                progressArea.style.display = 'none';
+                            }
+                        }
+                        processChunk(0);
+                    };
+                } catch (err) {
+                    progressArea.style.display = 'none';
+                    alert('处理失败: ' + err.message);
+                }
+            }
+        };
+        document.getElementById('previewBtn').onclick = function() {
+            if (!lastBlobUrl || !lastExt) return alert('请先解密并生成文件');
+            const imgExts = ["jpg","jpeg","png","gif","webp","bmp","svg"];
+            const videoExts = ["mp4","webm","ogg"];
+            const audioExts = ["mp3","wav","ogg","aac","flac","m4a"];
+            if (imgExts.includes(lastExt)) {
+                const win = window.open('', '_blank');
+                win.document.write(`<img src='${lastBlobUrl}' style='max-width:100vw;max-height:100vh;display:block;margin:auto;'/>`);
+            } else if (videoExts.includes(lastExt)) {
+                const win = window.open('', '_blank');
+                win.document.write(`<video src='${lastBlobUrl}' controls autoplay style='max-width:100vw;max-height:100vh;display:block;margin:auto;'></video>`);
+            } else if (audioExts.includes(lastExt)) {
+                const win = window.open('', '_blank');
+                win.document.write(`<audio src='${lastBlobUrl}' controls autoplay style='width:100%;margin:auto;display:block;'></audio>`);
+            } else if (lastExt === 'pdf') {
+                const win = window.open('', '_blank');
+                win.document.write(`<iframe src='${lastBlobUrl}' style='width:100vw;height:100vh;border:none;'></iframe>`);
+            } else if (lastExt === 'txt') {
+                fetch(lastBlobUrl).then(r=>r.text()).then(text=>{
+                    const win = window.open('', '_blank');
+                    win.document.write(`<pre style='white-space:pre-wrap;word-break:break-all;font-size:1.1em;padding:2em;'>${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>`);
+                });
+            } else if (["doc","docx","ppt","pptx","xls","xlsx"].includes(lastExt)) {
+                const blob = lastBlobUrl;
+                const win = window.open('', '_blank');
+                win.document.write(`<p>如无法预览，请手动下载后用Office打开。</p><iframe src='https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(blob)}' style='width:100vw;height:100vh;border:none;'></iframe>`);
+            } else {
+                alert('该文件类型暂不支持在线预览');
+            }
+        };
+        function textEncrypt(str, key) {
+            if (!key) return str;
+            let out = [];
+            for (let i = 0; i < str.length; i++) {
+                let c = str.charCodeAt(i);
+                let k = key.charCodeAt(i % key.length);
+                let e = ((c ^ k) + (k % 13) + i) % 65536;
+                out.push(e);
+            }
+            return btoa(out.join(','));
+        }
+        function textDecrypt(enc, key) {
+            if (!key) return enc;
+            let arr;
+            try {
+                arr = atob(enc).split(',').map(Number);
+            } catch (e) { return '解密失败，内容格式不正确'; }
+            let out = '';
+            for (let i = 0; i < arr.length; i++) {
+                let k = key.charCodeAt(i % key.length);
+                let c = (arr[i] - (k % 13) - i + 65536) % 65536;
+                let o = c ^ k;
+                out += String.fromCharCode(o);
+            }
+            return out;
+        }
+        document.getElementById('mainSelect').style.display = '';
+        document.getElementById('file-section').style.display = 'none';
+        document.getElementById('text-mode').style.display = 'none';
+        document.getElementById('toTextMode').onclick = function() {
+            document.getElementById('mainSelect').style.display = 'none';
+            document.getElementById('file-section').style.display = 'none';
+            document.getElementById('text-mode').style.display = '';
+        };
+        document.getElementById('toFileMode').onclick = function() {
+            document.getElementById('mainSelect').style.display = 'none';
+            document.getElementById('file-section').style.display = '';
+            document.getElementById('text-mode').style.display = 'none';
+        };
+        document.getElementById('backHomeFromFile').onclick = function() {
+            document.getElementById('mainSelect').style.display = '';
+            document.getElementById('file-section').style.display = 'none';
+            document.getElementById('text-mode').style.display = 'none';
+        };
+        document.getElementById('backHomeFromText').onclick = function() {
+            document.getElementById('mainSelect').style.display = '';
+            document.getElementById('file-section').style.display = 'none';
+            document.getElementById('text-mode').style.display = 'none';
+            if(document.getElementById('modeSwitch')) document.getElementById('modeSwitch').style.display = 'none';
+            if(document.getElementById('textModeSwitch')) document.getElementById('textModeSwitch').style.display = 'none';
+        };
+        document.getElementById('textEncryptBtn').onclick = function() {
+            const txt = document.getElementById('textInput').value;
+            const key = document.getElementById('textKey').value;
+            if (!txt) return alert('请输入要加密的文字');
+            if (!key || key.length < 1 || key.length > 8) return alert('密码必须为1-8位');
+            const enc = textEncrypt(txt, key);
+            document.getElementById('textResult').textContent = enc;
+            document.getElementById('textResult').style.display = 'block';
+        };
+        document.getElementById('textDecryptBtn').onclick = function() {
+            const enc = document.getElementById('textInput').value;
+            const key = document.getElementById('textKey').value;
+            if (!enc) return alert('请输入要解密的内容');
+            if (!key || key.length < 1 || key.length > 8) return alert('密码必须为1-8位');
+            const dec = textDecrypt(enc, key);
+            document.getElementById('textResult').textContent = dec;
+            document.getElementById('textResult').style.display = 'block';
+        };
+    };
+    </script>
+</head>
+<body>
+</body>
+</html>
