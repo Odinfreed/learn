@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>马智峰 · 简历（网络安全+全栈开发）</title>
+    <!-- html2pdf 库 (真实PDF导出) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #eef2f5;
+            font-family: 'Segoe UI', 'Roboto', 'Noto Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            line-height: 1.5;
+            color: #1f2d3d;
+            padding: 40px 20px;
+        }
+
+        .resume-container {
+            max-width: 1050px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .toolbar {
+            background: #ffffffd9;
+            backdrop-filter: blur(8px);
+            padding: 16px 28px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            flex-wrap: wrap;
+        }
+
+        .btn-export {
+            background: #2c5f8a;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .btn-export:hover {
+            background: #1e4668;
+        }
+        .btn-export:active {
+            transform: scale(0.97);
+        }
+        .btn-word {
+            background: #2a7f6e;
+        }
+        .btn-word:hover {
+            background: #1e5f51;
+        }
+
+        .resume-content {
+            padding: 32px 40px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            border-bottom: 3px solid #2c5f8a;
+            padding-bottom: 20px;
+            margin-bottom: 24px;
+        }
+        .name-title h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #0f2b3d;
+            margin-bottom: 6px;
+        }
+        .name-title p {
+            font-size: 1rem;
+            color: #3e5a6b;
+        }
+        .contact-info {
+            text-align: right;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e4e;
+        }
+        .contact-info p {
+            margin-bottom: 4px;
+        }
+
+        section {
+            margin-bottom: 28px;
+        }
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            border-left: 5px solid #2c5f8a;
+            padding-left: 14px;
+            margin-bottom: 16px;
+            color: #1a3e50;
+        }
+
+        .edu-item, .exp-item, .project-item {
+            margin-bottom: 20px;
+        }
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 1.02rem;
+        }
+        .item-title {
+            color: #1f4e6e;
+        }
+        .item-date {
+            color: #5f7f9a;
+            font-weight: normal;
+            font-size: 0.85rem;
+        }
+        .item-sub {
+            font-weight: 600;
+            margin-top: 6px;
+            margin-bottom: 6px;
+            font-size: 0.92rem;
+            color: #2c5a7a;
+        }
+        .desc-list {
+            padding-left: 20px;
+            list-style-type: none;
+        }
+        .desc-list li {
+            margin-bottom: 6px;
+            position: relative;
+            padding-left: 18px;
+        }
+        .desc-list li::before {
+            content: "•";
+            color: #2c5f8a;
+            font-weight: bold;
+            font-size: 1rem;
+            position: absolute;
+            left: 2px;
+        }
+        .grid-2cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .skill-tag {
+            background: #e9f0f5;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #1e4a6e;
+        }
+        .honor-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .honor-badge {
+            background: #f8fafc;
+            border-left: 3px solid #2c5f8a;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            border-radius: 0 20px 20px 0;
+            width: calc(50% - 12px);
+            min-width: 200px;
+        }
+
+        footer {
+            font-size: 0.7rem;
+            text-align: center;
+            color: #8ba3b5;
+            border-top: 1px solid #e2edf2;
+            padding-top: 16px;
+            margin-top: 16px;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            .toolbar {
+                display: none;
+            }
+            .resume-container {
+                box-shadow: none;
+                border-radius: 0;
+                max-width: 100%;
+            }
+            .resume-content {
+                padding: 0.2in;
+            }
+            .skill-tag {
+                background: #e9eef3;
+                border: 1px solid #ccc;
+            }
+        }
+
+        @media (max-width: 750px) {
+            .resume-content {
+                padding: 20px;
+            }
+            .header {
+                flex-direction: column;
+            }
+            .contact-info {
+                text-align: left;
+                margin-top: 12px;
+            }
+            .grid-2cols {
+                grid-template-columns: 1fr;
+            }
+            .honor-badge {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="resume-container">
+    <div class="toolbar">
+        <button class="btn-export" id="exportPDFBtn">📄 导出 PDF 文档</button>
+        <button class="btn-export btn-word" id="exportWordBtn">📝 导出 Word 文档</button>
+    </div>
+    <div class="resume-content" id="resumeContent">
+        <div class="header">
+            <div class="name-title">
+                <h1>马智峰</h1>
+                <p>网络运维 · 安全蓝队防御 · 全栈开发 (AI应用方向)</p>
+            </div>
+            <div class="contact-info">
+                <p>📞 198-5914-5366</p>
+                <p>📧 3135267085@qq.com</p>
+                <p>🎂 2005.02 · 男 · 共青团员 · 福建福州</p>
+                <!-- 已移除期望城市和薪资 -->
+            </div>
+        </div>
+
+        <!-- 教育背景 (教育机构) -->
+        <section>
+            <div class="section-title">教育背景</div>
+            <div class="edu-item">
+                <div class="item-header">
+                    <span class="item-title">🎓 福州英华职业学院（教育机构）· 计算机网络技术 专科</span>
+                    <span class="item-date">2023.09 – 2026.07</span>
+                </div>
+                <div>综测专业第2 (前3%) · 校级二等奖学金 · 优秀班干部 · 先进工作者(2次) · 校级三好学生(2次)</div>
+                <div class="desc-list" style="margin-top: 6px;">
+                    <li>主修课程：计算机网络技术、局域网组建、网络安全设备配置、Linux系统、数据库应用技术、C语言、Windows Server</li>
+                    <li>专业排名前3%，具备扎实的理论基础与实践能力</li>
+                </div>
+            </div>
+            <div class="edu-item">
+                <div class="item-header">
+                    <span class="item-title">🛡️ 于晨国际IT（教育机构）· 网络安全蓝队防御 / 等保 / NA·NP认证课程</span>
+                    <span class="item-date">2024.01 – 2026.06</span>
+                </div>
+                <div class="desc-list">
+                    <li>深入掌握网络安全蓝队防御技术、等级保护2.0合规要求、应急响应流程</li>
+                    <li>精通思科/华为/华三网络技术：DHCP/VLAN/NAT/OSPF/VRRP/ACL，具备中大型网络规划与安全加固能力</li>
+                    <li>结合NA、NP级别路由交换技术，完成企业级网络架构设计与故障排查实践</li>
+                </div>
+            </div>
+        </section>
+
+        <!-- 实习经历 (时间已更新为 2025.09 – 2026.03) -->
+        <section>
+            <div class="section-title">实习经历</div>
+            <div class="exp-item">
+                <div class="item-header">
+                    <span class="item-title">武汉焱晨科技有限公司 · 生态运营 (游戏数据方向)</span>
+                    <span class="item-date">2025.09 – 2026.03</span>
+                </div>
+                <div class="desc-list">
+                    <li>搭建玩家分层、资源流通、社交生态监控体系，输出日报/周报驱动运营决策；单月用户引导消费均值超12万元。</li>
+                    <li>针对资源通胀、匹配延迟等痛点，推动活动参与率提升18%，限定道具兑换成功率98%，玩家负面反馈减少60%。</li>
+                    <li>协同策划/技术团队落地大型活动生态方案，制定风险应急预案，沉淀“数据监控-问题响应-策略复盘”闭环工作流。</li>
+                    <li>编撰生态运维手册，支撑新员工快速上手，实现标准化流程复用。</li>
+                </div>
+            </div>
+        </section>
+
+        <!-- 项目经验 -->
+        <section>
+            <div class="section-title">项目经验</div>
+            
+            <!-- 1. 5G组网竞赛 -->
+            <div class="project-item">
+                <div class="item-header">
+                    <span class="item-title">📡 5G组网与运维竞赛项目 (队长)</span>
+                    <span class="item-date">2024.10 – 2025.03</span>
+                </div>
+                <div class="desc-list">
+                    <li>基于5G端到端网络仿真平台，完成SA独立组网架构，配置小区参数、切片策略及QoS业务流。</li>
+                    <li>利用信令跟踪分析接入失败根因，优化切换参数，提升业务流畅度，获<span class="item-sub">福建省5G组网与运维大赛团体优秀奖</span>。</li>
+                    <li>整理标准化故障排查手册，用于竞赛培训。</li>
+                </div>
+            </div>
+
+            <!-- 2. 企业网络规划与安全评估 -->
+            <div class="project-item">
+                <div class="item-header">
+                    <span class="item-title">🏢 企业级网络规划与安全评估实践</span>
+                    <span class="item-date">2024.09 – 2025.01</span>
+                </div>
+                <div class="desc-list">
+                    <li>使用eNSP设计中型企业网络，部署VLAN/DHCP/NAT/OSPF/MSTP，实现全互联及链路冗余。</li>
+                    <li>配置802.1X认证及访问控制策略，利用Wireshark分析ARP欺骗与广播风暴，提出防御方案。</li>
+                    <li>项目获<span class="item-sub">校级信息安全管理与评估大赛一等奖</span>，设计文档纳入实训案例。</li>
+                </div>
+            </div>
+
+            <!-- 3. 逆水寒手游帮战数据分析系统 + 智能分团系统 (微信云数据库) -->
+            <div class="project-item">
+                <div class="item-header">
+                    <span class="item-title">⚔️ 逆水寒手游帮战数据分析系统 · 官网与智能分团系统</span>
+                    <span class="item-date">2025.10 – 至今</span>
+                </div>
+                <div class="desc-list">
+                    <li>独立开发全栈官网 + 管理后台，提供帮战数据可视化（战力对比、胜负预测、成员表现热力图），采用<span class="item-sub">微信小程序云数据库</span>（文档型数据库，实时同步）存储帮会成员数据及战斗记录。</li>
+                    <li><strong>核心创新 – 智能分团系统</strong>：支持管理人员在线处理帮会成员名单，根据战力、职业、活跃度等指标一键智能分组，并支持手动拖拽调整，实时预览分组结果，生成分组报表。</li>
+                    <li>与多位游戏领域知名博主达成初步合作，用于帮派赛事数据支持；系统已部署上线，管理端日处理分组请求稳定。</li>
+                </div>
+            </div>
+
+            <!-- 4. AI小程序「清风渡」- 智能管家小六子 (已删除日活/内测数据) -->
+            <div class="project-item">
+                <div class="item-header">
+                    <span class="item-title">🤖 AI小程序「清风渡」 · 智能管家“小六子”</span>
+                    <span class="item-date">2025.11 – 至今</span>
+                </div>
+                <div class="desc-list">
+                    <li>基于微信小程序原生框架开发，调用<span class="item-sub">DeepSeek API</span>实现多轮对话式AI交互，打造私人语音/文字管家。</li>
+                    <li>核心功能：自然语言记账、日程管理、待办提醒。用户可通过对话让“小六子”记录收支、创建日程、查询事项。</li>
+                    <li>设计轻量后端服务（Python Flask）处理API代理及用户数据持久化（微信云数据库），支持语义解析与上下文记忆。</li>
+                    <li>项目已上线，获得良好用户反馈。</li>
+                </div>
+            </div>
+        </section>
+
+        <!-- 荣誉证书 & 竞赛奖项 (已包含三好学生两次、AI训练师三级已获得) -->
+        <section>
+            <div class="section-title">荣誉证书 & 竞赛奖项</div>
+            <div class="honor-list">
+                <div class="honor-badge">🏆 福建省5G组网与运维大赛 团体优秀奖 (省级)</div>
+                <div class="honor-badge">🏆 第十一届海峡两岸职业技能大赛 项目路演三等奖</div>
+                <div class="honor-badge">🏆 创新创业成果展 省级三等奖</div>
+                <div class="honor-badge">🏆 信息安全管理与评估大赛 校级一等奖</div>
+                <div class="honor-badge">⭐ 校级“先进工作者”称号 (两次) · 优秀班干部</div>
+                <div class="honor-badge">📖 校级三好学生 (两次) · 校级二等奖学金</div>
+                <div class="honor-badge">🎙️ 普通话二级甲等 · 人工智能训练师三级 (已获得)</div>
+                <div class="honor-badge">💡 一“马”当先马克思主义理论知识竞赛 优秀奖</div>
+                <div class="honor-badge">✍️ 第十九届叶圣陶杯作文竞赛 省级三等奖</div>
+            </div>
+        </section>
+
+        <!-- 专业技能 -->
+        <section>
+            <div class="section-title">专业技能</div>
+            <div class="grid-2cols">
+                <div>
+                    <div class="item-sub">📌 网络与安全</div>
+                    <div class="skill-tags">
+                        <span class="skill-tag">蓝队防御/等保2.0</span>
+                        <span class="skill-tag">DHCP/VLAN/NAT/OSPF</span>
+                        <span class="skill-tag">Wireshark抓包分析</span>
+                        <span class="skill-tag">华为/思科/华三设备</span>
+                        <span class="skill-tag">ACL/VPN/防火墙基础</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="item-sub">💻 开发与数据</div>
+                    <div class="skill-tags">
+                        <span class="skill-tag">Python / Flask</span>
+                        <span class="skill-tag">C语言基础</span>
+                        <span class="skill-tag">HTML/CSS/JS</span>
+                        <span class="skill-tag">微信小程序开发</span>
+                        <span class="skill-tag">DeepSeek API调用</span>
+                        <span class="skill-tag">微信小程序云数据库</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="item-sub">📊 数据分析与办公</div>
+                    <div class="skill-tags">
+                        <span class="skill-tag">Excel数据透视/可视化</span>
+                        <span class="skill-tag">PPT/策划案撰写</span>
+                        <span class="skill-tag">Visio网络拓扑</span>
+                        <span class="skill-tag">Linux常用命令</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="item-sub">🧠 软实力</div>
+                    <div class="skill-tags">
+                        <span class="skill-tag">组织策划 · 跨部门协作</span>
+                        <span class="skill-tag">快速学习 · 抗压能力</span>
+                        <span class="skill-tag">文档规范 · 知识沉淀</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 公益实践 (韩红月捐23次 + 其他) -->
+        <section>
+            <div class="section-title">公益实践 · 社会责任</div>
+            <div class="desc-list">
+                <li>❤️ <strong>韩红爱心慈善基金会月捐人</strong> (2024.07 – 至今)：累计月捐<strong>23次</strong>，定向支持“百人医疗援助”“乡村振兴帮扶”项目；参与物资整理与受助信息统计。</li>
+                <li>🩸 <strong>无偿献血400CC</strong>，并加入<strong>造血干细胞捐献计划</strong>及<strong>死后遗体器官捐献计划</strong>，用实际行动践行奉献精神。</li>
+                <li>🎥 担任“红鸽行动”公益直播志愿者，协助线上公益宣传与执行，助力公益传播。</li>
+                <li>🧾 多次参与校内志愿服务、迎新工作，累计志愿时长120+小时，获得师生高度认可。</li>
+            </div>
+        </section>
+
+        <!-- 自我评价 -->
+        <section>
+            <div class="section-title">自我评价</div>
+            <div class="desc-list">
+                <li><strong>专业复合型：</strong> 既深耕网络与安全方向（蓝队、等保、NA/NP），又具备全栈开发能力（网站、AI小程序、数据分析）。善于将网络知识与软件开发融合创新。</li>
+                <li><strong>极强自驱力：</strong> 在校综测专业第2，加权平均分84.59，同时自学AI应用开发、小程序生态，快速落地项目并获取真实用户合作。</li>
+                <li><strong>组织&责任：</strong> 担任学生干部、助理期间策划多场大型活动，获“先进工作者”“优秀班干部”；公益行动展现回馈社会的责任感。</li>
+                <li><strong>适配岗位：</strong> 期望从事网络运维/安全运营/开发运维结合的工作，能快速适应新环境，以结果为导向创造价值。</li>
+            </div>
+        </section>
+        <footer>更新日期：2026年02月 · 完整项目作品集可联系获取</footer>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const pdfBtn = document.getElementById('exportPDFBtn');
+        const wordBtn = document.getElementById('exportWordBtn');
+        const element = document.getElementById('resumeContent');
+
+        // 导出 PDF (真实文件下载)
+        pdfBtn.addEventListener('click', function() {
+            const opt = {
+                margin:        [0.5, 0.5, 0.5, 0.5], // 上下左右边距(单位:in)
+                filename:     '马智峰_简历.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, letterRendering: true, useCORS: false, logging: false },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        });
+
+        // 导出 Word 文档 (.doc)
+        wordBtn.addEventListener('click', function() {
+            // 获取当前简历内容的完整HTML结构，并包装为完整word文档
+            const originalHtml = element.cloneNode(true);
+            // 移除按钮可能产生的交互元素内部干扰（确保样式保留）
+            const styleContent = document.querySelector('style').innerHTML;
+            const docHtml = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>马智峰_简历</title>
+                    <style>
+                        /* 完全复制原有样式 */
+                        ${styleContent}
+                        body {
+                            padding: 40px 20px;
+                            background: white;
+                        }
+                        .toolbar {
+                            display: none;
+                        }
+                        .resume-container {
+                            box-shadow: none;
+                            margin: 0 auto;
+                        }
+                        .btn-export {
+                            display: none;
+                        }
+                        @media print {
+                            body {
+                                padding: 0;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="resume-container" style="max-width:1050px; margin:0 auto;">
+                        <div class="resume-content">
+                            ${originalHtml.innerHTML}
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+            const blob = new Blob([docHtml], { type: 'application/msword' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.href = url;
+            link.download = '马智峰_简历.doc';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        });
+    })();
+</script>
+</body>
+</html>
